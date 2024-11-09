@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------- #
 #                                                                              #
 # 	Module:       main.py                                                      #
-# 	Author:       aarohkandy                                                     #
+# 	Author:       aarohkandy                                                   #
 # 	Created:      11/9/2024, 5:27:20 AM                                        #
 # 	Description:  V5 project                                                   #
 #                                                                              #
@@ -27,6 +27,11 @@ mogo_p = DigitalOut(brain.three_wire_port.c)
 intake_p = DigitalOut(brain.three_wire_port.b)
 controller_1 = Controller(PRIMARY)
 High_scoring = Motor(Ports.PORT20, GearSetting.RATIO_36_1, False)
+High_scoring.set_max_torque(100, PERCENT)
+High_scoring.set_velocity(100, PERCENT)
+
+intake.set_max_torque(100, PERCENT)
+intake.set_velocity(100, PERCENT)
 
 # Wait for rotation sensor to fully initialize
 wait(30, MSEC)
@@ -43,13 +48,12 @@ initializeRandomSeed()
 # Define toggle states and stall management variables
 intake_running = False
 high_scoring_running = False
-STALL_THRESHOLD = 0  # Velocity threshold for detecting a stall
-STALL_COUNT = 10  # Count threshold for detecting a stall
-RETRY_LIMIT = 3      # Maximum number of retry attempts
-REVERSE_TIME = 2   # Time in milliseconds to reverse
-RETRY_INTERVAL = 500 # Interval between retry attempts in milliseconds
+STALL_THRESHOLD = 10  # Velocity threshold for detecting a stall
+STALL_COUNT = 3  # Count threshold for detecting a stall
+RETRY_LIMIT = 3  # Maximum number of retry attempts
+REVERSE_TIME = 1500  # Time in milliseconds to reverse
+RETRY_INTERVAL = 500  # Interval between retry attempts in milliseconds
 current_direction = FORWARD  # Assuming FORWARD is a predefined constant
-REVERSE_TIME = 1500  # Time to reverse in milliseconds
 
 # Variables to handle intake stall recovery
 intake_stalled = False
@@ -57,15 +61,13 @@ retry_count = 0
 last_retry_time = 0
 consecutive_stall_count = 0
 
-# Main control loop
-while True:
-    # Display joystick positions
+def display_joystick_positions():
     brain.screen.clear_screen()
     brain.screen.set_cursor(1, 1)
     brain.screen.print(str(int(controller_1.axis3.position())) + " " + str(int(controller_1.axis2.position())))
     wait(0.1, SECONDS)
 
-    # Set motor velocities based on joystick positions for the drive motors
+def set_drive_motor_velocities():
     l1.set_velocity(int(controller_1.axis3.position()), PERCENT)
     l2.set_velocity(int(controller_1.axis3.position()), PERCENT)
     l3.set_velocity(int(controller_1.axis3.position()), PERCENT)
@@ -73,7 +75,8 @@ while True:
     r2.set_velocity(int(controller_1.axis2.position()), PERCENT)
     r3.set_velocity(int(controller_1.axis2.position()), PERCENT)
 
-    # Toggle for High_scoring motor with buttonL1
+def toggle_high_scoring_motor():
+    global high_scoring_running
     if controller_1.buttonL1.pressing():
         wait(100, MSEC)  # Debounce delay
         if not high_scoring_running:
@@ -81,11 +84,9 @@ while True:
         else:
             High_scoring.stop()
         high_scoring_running = not high_scoring_running
-        # Wait until the button is released to register the next press
         while controller_1.buttonL1.pressing():
             wait(10, MSEC)
 
-    # Toggle for High_scoring motor in the opposite direction with buttonL2
     if controller_1.buttonL2.pressing():
         wait(100, MSEC)  # Debounce delay
         if not high_scoring_running:
@@ -93,24 +94,22 @@ while True:
         else:
             High_scoring.stop()
         high_scoring_running = not high_scoring_running
-        # Wait until the button is released to register the next press
         while controller_1.buttonL2.pressing():
             wait(10, MSEC)
 
-    # Toggle for intake motor with buttonR1
+def toggle_intake_motor():
+    global intake_running, current_direction
     if controller_1.buttonR1.pressing():
         wait(100, MSEC)  # Debounce delay
         if not intake_running:
-            current_direction = FORWARD
             intake.spin(FORWARD)
+            current_direction = FORWARD
         else:
             intake.stop()
         intake_running = not intake_running
-        # Wait until the button is released to register the next press
         while controller_1.buttonR1.pressing():
             wait(10, MSEC)
 
-    # Toggle for intake motor in the opposite direction with buttonR2
     if controller_1.buttonR2.pressing():
         wait(100, MSEC)  # Debounce delay
         if not intake_running:
@@ -119,45 +118,46 @@ while True:
         else:
             intake.stop()
         intake_running = not intake_running
-        # Wait until the button is released to register the next press
         while controller_1.buttonR2.pressing():
             wait(10, MSEC)
 
-    # Stall detection and handling for intake motor without blocking
+def stall_detection_and_handling():
+    global consecutive_stall_count, intake_stalled, retry_count, last_retry_time
     current_time = time.ticks_ms()
     if intake_running:
-        if abs(intake.velocity(PERCENT)) <= STALL_THRESHOLD:
+        current_velocity = intake.velocity(PERCENT)
+        if abs(current_velocity) <= STALL_THRESHOLD:
             consecutive_stall_count += 1
         else:
             consecutive_stall_count = 0
 
         if consecutive_stall_count >= STALL_COUNT and not intake_stalled:
-            # Enter stalled state
             intake_stalled = True
             consecutive_stall_count = 0
             retry_count = 0
-            last_retry_time = current_time  # Start timing for retry attempts
+            last_retry_time = current_time
     else:
         intake_stalled = False
         consecutive_stall_count = 0
-        
+
+def retry_mechanism():
+    global intake_stalled, retry_count, last_retry_time, current_direction
+    current_time = time.ticks_ms()
     if intake_stalled:
-        # Check if it's time for another retry attempt
         if retry_count < RETRY_LIMIT and current_time - last_retry_time > RETRY_INTERVAL:
-            # Reverse briefly to attempt clearing the blockage
             print("Spinning in opposite direction")
             if current_direction == FORWARD:
                 intake.spin(REVERSE)
             else:
                 intake.spin(FORWARD)
-            wait(REVERSE_TIME, MSEC)  # Brief reverse time
+            wait(REVERSE_TIME, MSEC)
             retry_count += 1
-            last_retry_time = current_time  # Update last retry time
+            last_retry_time = current_time
             print("Spinning back")
             intake.spin(current_direction)
             intake_stalled = False
-       
-    # Handle digital outputs based on other buttons
+
+def handle_digital_outputs():
     if controller_1.buttonA.pressing():
         mogo_p.set(False)
         for i in range(5):
@@ -175,3 +175,13 @@ while True:
         for i in range(5):
             print("button")
 
+# Main control loop
+while True:
+    display_joystick_positions()
+    set_drive_motor_velocities()
+    toggle_high_scoring_motor()
+    toggle_intake_motor()
+    stall_detection_and_handling()
+    retry_mechanism()
+    handle_digital_outputs()
+    wait(10, MSEC)  # Main loop delay
