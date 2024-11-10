@@ -22,6 +22,19 @@ r3 = Motor(Ports.PORT3, GearSetting.RATIO_18_1, False)
 l1 = Motor(Ports.PORT11, GearSetting.RATIO_18_1, True)
 l2 = Motor(Ports.PORT12, GearSetting.RATIO_18_1, True)
 l3 = Motor(Ports.PORT13, GearSetting.RATIO_18_1, True)
+l1.spin(FORWARD)
+l2.spin(FORWARD)
+l3.spin(FORWARD)
+r1.spin(FORWARD)
+r2.spin(FORWARD)
+r3.spin(FORWARD)
+# Create MotorGroups for each side (with three motors each)
+left_drive_smart = MotorGroup(l1, l2, l3)
+right_drive_smart = MotorGroup(r1, r2, r3)
+
+# Create DriveTrain with updated MotorGroups
+drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 219.44, 295, 40, MM, 1)
+
 intake = Motor(Ports.PORT18, GearSetting.RATIO_18_1, False)
 mogo_p = DigitalOut(brain.three_wire_port.c)
 intake_p = DigitalOut(brain.three_wire_port.b)
@@ -60,6 +73,7 @@ intake_stalled = False
 retry_count = 0
 last_retry_time = 0
 consecutive_stall_count = 0
+reverse_drive = False
 
 def display_joystick_positions():
     brain.screen.clear_screen()
@@ -68,13 +82,34 @@ def display_joystick_positions():
     wait(0.1, SECONDS)
 
 def set_drive_motor_velocities():
-    l1.set_velocity(int(controller_1.axis3.position()), PERCENT)
-    l2.set_velocity(int(controller_1.axis3.position()), PERCENT)
-    l3.set_velocity(int(controller_1.axis3.position()), PERCENT)
-    r1.set_velocity(int(controller_1.axis2.position()), PERCENT)
-    r2.set_velocity(int(controller_1.axis2.position()), PERCENT)
-    r3.set_velocity(int(controller_1.axis2.position()), PERCENT)
+    global reverse_drive
+    if controller_1.buttonUp.pressing():
+        reverse_drive = not reverse_drive
+        while controller_1.buttonUp.pressing():
+            wait(10, MSEC)
 
+    if reverse_drive:
+        # Reverse the direction of both joystick inputs
+        left_joystick_y = -controller_1.axis2.position()  # Left joystick maps to right motors
+        right_joystick_y = -controller_1.axis3.position() # Right joystick maps to left motors
+    else:
+        # Normal control
+        left_joystick_y = controller_1.axis3.position()
+        right_joystick_y = controller_1.axis2.position()
+
+        # Set velocities for the left and right drive motors
+        left_drive_smart.set_velocity(left_joystick_y, PERCENT)
+        if abs(left_joystick_y) < 5:
+            left_drive_smart.stop()  # Stop the left side if joystick is in deadband
+        else:
+            left_drive_smart.spin(FORWARD)  # Spin in the FORWARD direction
+
+        right_drive_smart.set_velocity(right_joystick_y, PERCENT)
+        if abs(right_joystick_y) < 5:
+            right_drive_smart.stop()  # Stop the right side if joystick is in deadband
+        else:
+           right_drive_smart.spin(FORWARD)  # Spin in the FORWARD direction
+   
 def toggle_high_scoring_motor():
     global high_scoring_running
     if controller_1.buttonL1.pressing():
