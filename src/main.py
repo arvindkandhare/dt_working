@@ -62,9 +62,9 @@ initializeRandomSeed()
 intake_running = False
 high_scoring_running = False
 STALL_THRESHOLD = 10  # Velocity threshold for detecting a stall
-STALL_COUNT = 3  # Count threshold for detecting a stall
+STALL_COUNT = 2  # Count threshold for detecting a stall
 RETRY_LIMIT = 3  # Maximum number of retry attempts
-REVERSE_TIME = 1500  # Time in milliseconds to reverse
+REVERSE_TIME = 500  # Time in milliseconds to reverse
 RETRY_INTERVAL = 500  # Interval between retry attempts in milliseconds
 current_direction = FORWARD  # Assuming FORWARD is a predefined constant
 
@@ -85,6 +85,7 @@ def set_drive_motor_velocities():
     global reverse_drive
     if controller_1.buttonUp.pressing():
         reverse_drive = not reverse_drive
+        print("Reversing drive direction " + str(reverse_drive))
         while controller_1.buttonUp.pressing():
             wait(10, MSEC)
 
@@ -97,62 +98,59 @@ def set_drive_motor_velocities():
         left_joystick_y = controller_1.axis3.position()
         right_joystick_y = controller_1.axis2.position()
 
-        # Set velocities for the left and right drive motors
-        left_drive_smart.set_velocity(left_joystick_y, PERCENT)
-        if abs(left_joystick_y) < 5:
-            left_drive_smart.stop()  # Stop the left side if joystick is in deadband
-        else:
-            left_drive_smart.spin(FORWARD)  # Spin in the FORWARD direction
+    # Set velocities for the left and right drive motors
+    left_drive_smart.set_velocity(left_joystick_y, PERCENT)
+    if abs(left_joystick_y) < 5:
+        left_drive_smart.stop()  # Stop the left side if joystick is in deadband
+    else:
+        left_drive_smart.spin(FORWARD)  # Spin in the FORWARD direction
 
-        right_drive_smart.set_velocity(right_joystick_y, PERCENT)
-        if abs(right_joystick_y) < 5:
-            right_drive_smart.stop()  # Stop the right side if joystick is in deadband
-        else:
-           right_drive_smart.spin(FORWARD)  # Spin in the FORWARD direction
+    right_drive_smart.set_velocity(right_joystick_y, PERCENT)
+    if abs(right_joystick_y) < 5:
+       right_drive_smart.stop()  # Stop the right side if joystick is in deadband
+    else:
+        right_drive_smart.spin(FORWARD)  # Spin in the FORWARD direction
    
-def toggle_high_scoring_motor():
+def set_high_scoring_motor_state(state, direction=FORWARD):
     global high_scoring_running
+    if state:
+        High_scoring.spin(direction)
+    else:
+        High_scoring.stop()
+    high_scoring_running = state
+
+def toggle_high_scoring_motor():
     if controller_1.buttonL1.pressing():
         wait(100, MSEC)  # Debounce delay
-        if not high_scoring_running:
-            High_scoring.spin(FORWARD)
-        else:
-            High_scoring.stop()
-        high_scoring_running = not high_scoring_running
+        set_high_scoring_motor_state(not high_scoring_running, FORWARD)
         while controller_1.buttonL1.pressing():
             wait(10, MSEC)
 
     if controller_1.buttonL2.pressing():
         wait(100, MSEC)  # Debounce delay
-        if not high_scoring_running:
-            High_scoring.spin(REVERSE)
-        else:
-            High_scoring.stop()
-        high_scoring_running = not high_scoring_running
+        set_high_scoring_motor_state(not high_scoring_running, REVERSE)
         while controller_1.buttonL2.pressing():
             wait(10, MSEC)
 
-def toggle_intake_motor():
+def set_intake_motor_state(state, direction=FORWARD):
     global intake_running, current_direction
+    if state:
+        intake.spin(direction)
+        current_direction = direction
+    else:
+        intake.stop()
+    intake_running = state
+
+def toggle_intake_motor():
     if controller_1.buttonR1.pressing():
         wait(100, MSEC)  # Debounce delay
-        if not intake_running:
-            intake.spin(FORWARD)
-            current_direction = FORWARD
-        else:
-            intake.stop()
-        intake_running = not intake_running
+        set_intake_motor_state(not intake_running, FORWARD)
         while controller_1.buttonR1.pressing():
             wait(10, MSEC)
 
     if controller_1.buttonR2.pressing():
         wait(100, MSEC)  # Debounce delay
-        if not intake_running:
-            intake.spin(REVERSE)
-            current_direction = REVERSE
-        else:
-            intake.stop()
-        intake_running = not intake_running
+        set_intake_motor_state(not intake_running, REVERSE)
         while controller_1.buttonR2.pressing():
             wait(10, MSEC)
 
@@ -175,23 +173,6 @@ def stall_detection_and_handling():
         intake_stalled = False
         consecutive_stall_count = 0
 
-def retry_mechanism():
-    global intake_stalled, retry_count, last_retry_time, current_direction
-    current_time = time.ticks_ms()
-    if intake_stalled:
-        if retry_count < RETRY_LIMIT and current_time - last_retry_time > RETRY_INTERVAL:
-            print("Spinning in opposite direction")
-            if current_direction == FORWARD:
-                intake.spin(REVERSE)
-            else:
-                intake.spin(FORWARD)
-            wait(REVERSE_TIME, MSEC)
-            retry_count += 1
-            last_retry_time = current_time
-            print("Spinning back")
-            intake.spin(current_direction)
-            intake_stalled = False
-
 def handle_digital_outputs():
     if controller_1.buttonA.pressing():
         mogo_p.set(False)
@@ -209,6 +190,41 @@ def handle_digital_outputs():
         intake_p.set(True)
         for i in range(5):
             print("button")
+
+def retry_mechanism():
+    global intake_stalled, retry_count, last_retry_time, current_direction, high_score_stall
+    current_time = time.ticks_ms()
+    if intake_stalled:
+        if retry_count < RETRY_LIMIT and current_time - last_retry_time > RETRY_INTERVAL:
+            if high_score_stall:
+                # High score stall handling
+                intake.spin(REVERSE)
+                wait(REVERSE_TIME, MSEC)
+                High_scoring.spin(FORWARD)
+                wait(100, MSEC)  # Move high score motor forward for 1/10th of a second
+                High_scoring.stop()
+                intake.stop()
+                intake_stalled = False
+            else:
+                # Regular stall handling
+                if current_direction == FORWARD:
+                    intake.spin(REVERSE)
+                else:
+                    intake.spin(FORWARD)
+                wait(REVERSE_TIME, MSEC)
+                retry_count += 1
+                last_retry_time = current_time
+                intake.spin(current_direction)
+                intake_stalled = False
+
+def toggle_high_scoring_mode():
+    global high_scoring_mode
+    if controller_1.buttonDown.pressing():
+        wait(100, MSEC)  # Debounce delay
+        high_scoring_mode = not high_scoring_mode
+        print("High scoring mode: " + str(high_scoring_mode))
+        while controller_1.buttonDown.pressing():
+            wait(10, MSEC)
 
 # Main control loop
 while True:
