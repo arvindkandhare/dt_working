@@ -1,26 +1,13 @@
 #region VEXcode Generated Robot Configuration
 from vex import *
-import urandom
 
 # Brain should be defined by default
 brain=Brain()
 
-# Robot configuration code
 
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
-
-
-# Make random actually random
-def initializeRandomSeed():
-    wait(100, MSEC)
-    random = brain.battery.voltage(MV) + brain.battery.current(CurrentUnits.AMP) * 100 + brain.timer.system_high_res()
-    urandom.seed(int(random))
-      
-# Set random seed 
-initializeRandomSeed()
-
 
 def play_vexcode_sound(sound_name):
     # Helper to make playing sounds from the V5 in VEXcode easier and
@@ -86,6 +73,11 @@ wheel_circumference = 8.6393798
 feet_to_unit = 2.5
 gear_ratio = 3/4
 tolerance = 1
+lookahead = 1
+current_x = pos_list[0][0]
+current_y = pos_list[0][0]
+previous_right_encoder = 0
+previous_left_encoder = 0
 
 
 def leftEncoder():
@@ -115,7 +107,16 @@ def update_position():
     current_x += delta_d * math.cos(current_angle)
     current_y += delta_d * math.sin(current_angle)
 
+
+def calculate_lookahead_point(pos_list, current_x, current_y):
+    dx = pos_list[0][0] - current_x
+    dy = pos_list[0][1] - current_y
+    if math.sqrt((dx**2 + dy**2)) < lookahead:
+        pos_list.pop(0)
+    return pos_list[0]
+
 while True:
     update_position()
-    print(str(current_x)
-    print(str(current_y)
+    point = calculate_lookahead_point(pos_list, current_x, current_y)
+    print(str(current_x))
+    print(str(current_y))
