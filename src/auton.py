@@ -65,7 +65,7 @@ gyro.set_heading(0, DEGREES)
 gyro.calibrate()
 
 #list definitions 
-pos_list = []
+pos_list = [(0,0), (0,10), (0,20), (0,30), (0,40), (0,50), (0,60), (0,70), (0,80), (0,90), (0,100)]
 passed_through_list = []
 
 
@@ -73,12 +73,13 @@ wheel_circumference = 8.6393798
 feet_to_unit = 2.5
 gear_ratio = 3/4
 tolerance = 1
-lookahead = 1
+lookahead = 3
 current_x = pos_list[0][0]
 current_y = pos_list[0][0]
 previous_right_encoder = 0
 previous_left_encoder = 0
-
+forward_velocity = 35
+turn_velocity_k = forward_velocity/100
 
 def leftEncoder():
     return (left_motor_a.position(DEGREES) + left_motor_b.position(DEGREES) + left_motor_c.position(DEGREES)) / 3
@@ -107,16 +108,56 @@ def update_position():
     current_x += delta_d * math.cos(current_angle)
     current_y += delta_d * math.sin(current_angle)
 
+    return current_x, current_y
+
 
 def calculate_lookahead_point(pos_list, current_x, current_y):
+    if len(pos_list) == 0:
+        return "done"
     dx = pos_list[0][0] - current_x
     dy = pos_list[0][1] - current_y
-    if math.sqrt((dx**2 + dy**2)) < lookahead:
+    while math.sqrt((dx**2 + dy**2)) < lookahead:
         pos_list.pop(0)
-    return pos_list[0]
+        dx = pos_list[0][0] - current_x
+        dy = pos_list[0][1] - current_y
+    return pos_list
+
+def calculate_drive_speeds(pos_list, current_x, current_y, forward_velocity, turn_velocity_k):
+    current_angle = math.radians(gyro.heading(DEGREES))
+    dx = pos_list[0][0] - current_x
+    dy = pos_list[0][1] - current_y
+
+    point_angle_diff = math.atan2(dy, dx) - current_angle
+
+    if point_angle_diff > math.pi:
+        point_angle_diff = point_angle_diff - 2*math.pi
+
+    if point_angle_diff < math.pi:
+        point_angle_diff = point_angle_diff + 2*math.pi
+
+    left_velocity = forward_velocity - turn_velocity_k
+    right_velocity = forward_velocity + turn_velocity_k
+
+    return max(min(left_velocity, 100), -100), max(min(right_velocity, 100), -100)
+
+
+
+
 
 while True:
-    update_position()
-    point = calculate_lookahead_point(pos_list, current_x, current_y)
+    left_drive_smart.spin(FORWARD)
+    right_drive_smart.spin(FORWARD)
+
+
+    current_x, current_y = update_position()
+    pos_list = calculate_lookahead_point(pos_list, current_x, current_y)
+    if pos_list == "done":
+        break
+    left_velocity, right_velocity = calculate_drive_speeds(pos_list, current_x, current_y, forward_velocity, turn_velocity_k)
+
+    left_drive_smart.set_velocity(left_velocity, PERCENT)
+    right_drive_smart.set_velocity(right_velocity, PERCENT)
+
+
     print(str(current_x))
     print(str(current_y))
