@@ -170,8 +170,8 @@ current_x = -1
 current_y =  -1
 previous_right_encoder = 0
 previous_left_encoder = 0
-forward_velocity = 80
-turn_velocity_k = 1.5
+forward_velocity = 10
+turn_velocity_k = 5
 left_velocity = 5
 right_velocity = 5
 #forward_velocity/100
@@ -194,7 +194,7 @@ def update_position():
     right_encoder = ((rightEncoder() / 360) * wheel_circumference * gear_ratio) * feet_to_unit
     delta_left = left_encoder - previous_left_encoder
     delta_right = right_encoder - previous_right_encoder
-   
+    #print("delta_left: "+ str(delta_left)+" delta_rhgt: " + str(delta_right) + " left_enc: " + str(left_encoder) + " right_enc: " + str(right_encoder))
     # Update previous encoder values
     previous_left_encoder = left_encoder
     previous_right_encoder = right_encoder
@@ -206,6 +206,7 @@ def update_position():
    
     current_x += delta_d * math.cos(current_angle)
     current_y += delta_d * math.sin(current_angle)
+    print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
  
  
 def calculate_lookahead_point(points_list, n):
@@ -225,26 +226,25 @@ def calculate_lookahead_point(points_list, n):
         distance = math.sqrt(dx**2 + dy**2)
 
         if distance <= lookahead:
-            points_list = points_list[i+1:]
-            print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[0][0]) + "pos y: " + str(points_list[0][1]) + "size: " + str(len(points_list)))
-            forward_velocity = forward_velocity * (len(points_list)/start_pos_size) + 5
+            del points_list[:i+1]  # Remove the reached point in place
+            #print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[0][0]) + "pos y: " + str(points_list[0][1]) + "size: " + str(len(points_list)))
+            #forward_velocity = forward_velocity * (len(points_list)/start_pos_size) 
             return
 
         if distance >= lookahead and distance < min_distance:
             min_distance = distance
             min_index = i
-            if min_index != 0:
-                print("Other points are closer")
-                print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[i][0]) + "pos y: " + str(points_list[i][1]) + "size: " + str(len(points_list)))
+            #if min_index != 0:
+            #    print("Other points are closer x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[i][0]) + "pos y: " + str(points_list[i][1]) + "size: " + str(len(points_list)))
                 
 
- #   if min_index > 0:
+    #if min_index > 0:
         # Pop all points before the nearest valid point
-        # points_list = points_list[min_index:]
-        #forward_velocity = forward_velocity * (len(points_list)/start_pos_size) + 5
+    #    points_list = points_list[min_index:]
+        #forward_velocity = forward_velocity * (len(points_list)/start_pos_size) 
  
-def calculate_drive_speeds(points_list, forward_velocity, turn_velocity_k):
-    global current_x, current_y, current_angle, left_velocity, right_velocity
+def calculate_drive_speeds(points_list):
+    global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
     current_angle = math.radians(gyro.heading(DEGREES))  # Get the current heading in radians
     dx = points_list[0][0] - current_x  # Calculate the difference in x
     dy = points_list[0][1] - current_y  # Calculate the difference in y
@@ -262,10 +262,10 @@ def calculate_drive_speeds(points_list, forward_velocity, turn_velocity_k):
         point_angle_diff += 2 * math.pi
 
    # Check if the point is behind the robot
-    if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
-        # Reverse the direction
-        forward_velocity = -forward_velocity
-        point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
+   # if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
+   #     # Reverse the direction
+    #    forward_velocity = -forward_velocity
+     #   point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
 
 
     # Calculate the wheel velocities
@@ -277,7 +277,7 @@ def calculate_drive_speeds(points_list, forward_velocity, turn_velocity_k):
     right_velocity = max(min(right_velocity, 100), -100)
 
 def walk_path(points_list):
-    global current_x, current_y, start_pos_size
+    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity
 
     start_pos_size = len(points_list)
 
@@ -293,9 +293,9 @@ def walk_path(points_list):
         if points_list == []:
             running = False
             break
-        calculate_drive_speeds(points_list, forward_velocity, turn_velocity_k)
+        calculate_drive_speeds(points_list)
         # print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[0][0]) + "pos y: " + str(points_list[0][1]) + "size: " + str(len(points_list)))
-        #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
+        print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity) + " points x: " + str(points_list[0][0]) + " y: " + str(points_list[0][1]) + " len: " + str(len(points_list)))
         left_drive_smart.set_velocity(left_velocity, PERCENT)
         left_drive_smart.spin(FORWARD)
         right_drive_smart.set_velocity(right_velocity, PERCENT)
@@ -439,7 +439,7 @@ def toggle_high_scoring_mode():
 def autonomous():
     # Autonomous code
     # For example, move forward for a certain distance
-    autonomous_sample()
+    autonomous_red_left()
 
 # Driver control function
 def drivercontrol():
