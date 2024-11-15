@@ -261,6 +261,13 @@ def calculate_drive_speeds(points_list, forward_velocity, turn_velocity_k):
     elif point_angle_diff < -math.pi:
         point_angle_diff += 2 * math.pi
 
+   # Check if the point is behind the robot
+    if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
+        # Reverse the direction
+        forward_velocity = -forward_velocity
+        point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
+
+
     # Calculate the wheel velocities
     left_velocity = forward_velocity + (point_angle_diff) * turn_velocity_k
     right_velocity = forward_velocity - (point_angle_diff) * turn_velocity_k
