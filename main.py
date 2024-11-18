@@ -30,27 +30,29 @@ donker = DigitalOut(brain.three_wire_port.d)
 # Constants
 MSEC_PER_SEC = 1000
 
+# define an enum for intake state
+class IntakeState:
+    STOPPED = 0
+    RUNNING = 1
+    STALLED = 2
+    FIXINGSTALL = 3
+
+intake_state = IntakeState.STOPPED
+
 # Global variables
 reverse_drive = True
-intake_running = False
 high_scoring_running = False
 current_direction = FORWARD
 high_scoring_mode = False
 # Constants
 STALL_THRESHOLD = 5       # Adjust as needed
-STALL_COUNT = 10
+STALL_COUNT = 5
 RETRY_LIMIT = 3
-RETRY_INTERVAL = 500      # in milliseconds
-REVERSE_TIME = 500        # in milliseconds
 MSEC_PER_SEC = 1000
 
 # Global variables
-intake_stalled = False
 retry_count = 0
-last_retry_time = 0
 consecutive_stall_count = 0
-intake_running = False
-current_direction = FORWARD
 high_scoring_running = False
 high_score_stall = False  # Set this accordingly in your main code if needed
 
@@ -65,9 +67,9 @@ def set_high_scoring_motor_state(state, direction=FORWARD, angle=0):
     high_scoring_running = state
 
 # Function to set the state of the intake motor
-def set_intake_motor_state(state, direction=FORWARD):
-    global intake_running, current_direction
-    if state:
+def set_intake_motor_state(direction=FORWARD):
+    global intake_state, current_direction
+    if intake_state == IntakeState.RUNNING or intake_state == IntakeState.FIXINGSTALL:
         intake1.set_velocity(95, PERCENT)
         intake2.set_velocity(95, PERCENT)
         intake1.spin(direction)
@@ -76,71 +78,47 @@ def set_intake_motor_state(state, direction=FORWARD):
     else:
         intake1.stop()
         intake2.stop()
-    intake_running = state
 
 # Stall detection and handling for the intake motor
 def stall_detection_and_handling():
-    global consecutive_stall_count, intake_stalled, retry_count, last_retry_time, high_score_stall
-    current_time = time.ticks_ms()
-    if intake_running:
+    global intake_state, consecutive_stall_count, retry_count, high_score_stall
+    global current_direction
+    if intake_state == IntakeState.RUNNING or intake_state == IntakeState.STALLED:
         current_velocity = intake1.velocity(PERCENT)
         if abs(current_velocity) <= STALL_THRESHOLD:
             consecutive_stall_count += 1
         else:
             consecutive_stall_count = 0
 
-        if consecutive_stall_count >= STALL_COUNT and not intake_stalled:
-            intake_stalled = True
+        if consecutive_stall_count >= STALL_COUNT:
+            intake_state = IntakeState.FIXINGSTALL
+            # Start in opposite direction
+            current_direction = REVERSE if current_direction == FORWARD else FORWARD
+            set_intake_motor_state(current_direction)
             if high_scoring_running:
                 high_score_stall = True
             consecutive_stall_count = 0
-            retry_count = 0
-            last_retry_time = current_time
+            retry_count = RETRY_LIMIT
     else:
-        intake_stalled = False
         consecutive_stall_count = 0
-
-# Retry mechanism for the intake motor when stalled
-def retry_mechanism():
-    global intake_stalled, retry_count, last_retry_time, current_direction, high_score_stall
-    current_time = time.ticks_ms()
-    if intake_stalled:
-        if retry_count < RETRY_LIMIT and current_time - last_retry_time > RETRY_INTERVAL:
+    if intake_state == IntakeState.FIXINGSTALL:
+        if retry_count == 0:
             if high_score_stall:
-                # High score stall handling
-                intake1.spin(FORWARD)
-                intake2.spin(REVERSE)
-                wait(REVERSE_TIME, MSEC)
-                intake1.stop()
-                intake2.stop()
-                High_scoring.spin(FORWARD)
-                wait(3*REVERSE_TIME, MSEC)  # Move high scoring motor forward briefly
-                High_scoring.stop()
-                intake_stalled = False
                 high_score_stall = False
+                intake_state = IntakeState.STOPPED
+                set_intake_motor_state(FORWARD)
             else:
-                # Regular stall handling
-                if current_direction == FORWARD:
-                    intake1.spin(REVERSE)
-                    intake2.spin(FORWARD)
-                else:
-                    intake1.spin(FORWARD)
-                    intake2.spin(REVERSE)
-                wait(REVERSE_TIME, MSEC)
-                retry_count += 1
-                last_retry_time = current_time
-                intake1.spin(current_direction)
-                intake2.spin(REVERSE if current_direction == FORWARD else FORWARD)
-                intake_stalled = False
+                intake_state = IntakeState.RUNNING
+                current_direction = REVERSE if current_direction == FORWARD else FORWARD
+                set_intake_motor_state(current_direction)
+        else:
+            retry_count -= 1
+
 
 from vex import *
 import urandom
 
-# Brain should be defined by default
-brain=Brain()
-
 # Robot configuration code
-
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
@@ -320,7 +298,6 @@ def walk_path(points_list):
         right_drive_smart.spin(FORWARD)
         update_position()
         stall_detection_and_handling()
-        retry_mechanism()
     left_drive_smart.set_velocity(0, PERCENT)
     left_drive_smart.stop()
     right_drive_smart.set_velocity(0, PERCENT)
@@ -331,6 +308,7 @@ def autonomous_sample():
     walk_path(red_left_tomogo)
 
 def autonomous_red_left():
+    global intake_state
     wait(3, SECONDS)
 
     #pick up intake so ramps drop
@@ -347,7 +325,8 @@ def autonomous_red_left():
     mogo_p.set(False)
 
     # start intake to pick up the top donut including the stall code
-    set_intake_motor_state(True, REVERSE)
+    intake_state = IntakeState.RUNNING
+    set_intake_motor_state(REVERSE)
 
     # Bring down the intake to knock off the top donut
     intake_p.set(False)
@@ -413,24 +392,31 @@ def toggle_high_scoring_motor():
 
 # Function to toggle the intake motor
 def toggle_intake_motor():
+    global intake_state
+    global consecutive_stall_count, retry_count, high_score_stall
     global intake_running
 
     if controller_1.buttonR1.pressing():
-        intake_running = not intake_running
-        set_intake_motor_state(intake_running, FORWARD)
+
+        intake_state = IntakeState.RUNNING if intake_state == IntakeState.STOPPED else IntakeState.STOPPED
+        consecutive_stall_count = 0
+        retry_count = 0
+        high_score_stall = False        
+
+        set_intake_motor_state(FORWARD)
         wait(100, MSEC)  # Debounce delay
         while controller_1.buttonR1.pressing():
             wait(100, MSEC)
 
     if controller_1.buttonR2.pressing():
-        intake_running = not intake_running
-        set_intake_motor_state(intake_running, REVERSE)
+        intake_state = IntakeState.RUNNING if intake_state != IntakeState.STOPPED else IntakeState.STOPPED
+        consecutive_stall_count = 0
+        retry_count = 0
+        high_score_stall = False        
+        set_intake_motor_state(REVERSE)
         wait(100, MSEC)  # Debounce delay
         while controller_1.buttonR2.pressing():
             wait(100, MSEC)
-
-
-
 
 # Function to handle digital outputs based on controller buttons
 def handle_digital_outputs():
@@ -473,7 +459,6 @@ def drivercontrol():
         toggle_high_scoring_mode()
         handle_digital_outputs()
         stall_detection_and_handling()
-        retry_mechanism()
         wait(20, MSEC)
 
 def autonomous_empty():
