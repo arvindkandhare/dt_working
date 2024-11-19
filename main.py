@@ -47,7 +47,7 @@ high_scoring_mode = False
 # Constants
 STALL_THRESHOLD = 5       # Adjust as needed
 STALL_COUNT = 5
-RETRY_LIMIT = 3
+RETRY_LIMIT = 30
 MSEC_PER_SEC = 1000
 
 # Global variables
@@ -86,11 +86,13 @@ def stall_detection_and_handling():
     if intake_state == IntakeState.RUNNING or intake_state == IntakeState.STALLED:
         current_velocity = intake1.velocity(PERCENT)
         if abs(current_velocity) <= STALL_THRESHOLD:
+            #print("Stalled" + str(consecutive_stall_count))
             consecutive_stall_count += 1
         else:
             consecutive_stall_count = 0
 
         if consecutive_stall_count >= STALL_COUNT:
+            #print("Unstaling")
             intake_state = IntakeState.FIXINGSTALL
             # Start in opposite direction
             current_direction = REVERSE if current_direction == FORWARD else FORWARD
@@ -108,10 +110,12 @@ def stall_detection_and_handling():
                 intake_state = IntakeState.STOPPED
                 set_intake_motor_state(FORWARD)
             else:
+                #print("Fixed")
                 intake_state = IntakeState.RUNNING
                 current_direction = REVERSE if current_direction == FORWARD else FORWARD
                 set_intake_motor_state(current_direction)
         else:
+            print("Retrying")
             retry_count -= 1
 
 
@@ -129,7 +133,7 @@ pos1_list = [(3.385, 110.743), (5.289, 111.357), (7.196, 111.958), (9.109, 112.5
 
 #Patjs
 #red_left_tomogo = [(-150.643, 34.664), (-148.909, 35.66), (-147.152, 36.615), (-145.372, 37.527), (-143.567, 38.39), (-141.741, 39.204), (-139.892, 39.968), (-138.024, 40.681), (-136.136, 41.34), (-134.23, 41.945), (-132.307, 42.496), (-130.37, 42.992), (-128.419, 43.435), (-126.458, 43.824), (-124.487, 44.163), (-122.508, 44.452), (-120.523, 44.696), (-118.533, 44.896), (-116.539, 45.056), (-114.543, 45.182), (-112.545, 45.277), (-110.547, 45.347), (-108.547, 45.397), (-106.548, 45.433), (-104.548, 45.461), (-102.548, 45.487), (-100.548, 45.518), (-98.549, 45.56), (-96.55, 45.619), (-94.551, 45.704), (-92.555, 45.821), (-90.561, 45.976), (-88.571, 46.177), (-86.587, 46.429), (-84.611, 46.738), (-82.646, 47.111), (-80.695, 47.55), (-78.761, 48.059), (-76.848, 48.642), (-74.959, 49.298), (-73.097, 50.026), (-71.265, 50.83), (-69.467, 51.705), (-67.703, 52.647), (-65.976, 53.655), (-64.286, 54.724), (-62.038, 56.275), (-62.038, 56.275)]
-red_left_tomogo = [(-150.643, 34.664),(-62.038, 56.275)]
+red_left_tomogo = [(-150.643, 34.664), (-131.95, 42.486), (-111.877, 45.302), (-91.575, 45.984), (-71.944, 50.714), (-62.038, 56.275), (-62.038, 56.275)]
 red_left_tofirststack = [(-93.734, 47.631), (-95.732, 47.532), (-97.731, 47.498), (-99.731, 47.533), (-101.727, 47.642), (-103.718, 47.83), (-105.699, 48.104), (-107.665, 48.467), (-109.612, 48.926), (-111.529, 49.493), (-113.412, 50.167), (-115.252, 50.949), (-117.043, 51.838), (-118.774, 52.839), (-120.427, 53.964), (-122.003, 55.194), (-123.497, 56.523), (-124.884, 57.963), (-126.174, 59.49), (-127.364, 61.098), (-128.433, 62.787), (-129.401, 64.537), (-130.26, 66.343), (-131.004, 68.198), (-131.651, 70.09), (-132.194, 72.015), (-132.633, 73.966), (-132.983, 75.935), (-133.243, 77.917), (-133.408, 79.91), (-133.491, 81.908), (-133.497, 83.908), (-133.422, 85.906), (-133.267, 87.9), (-133.043, 89.887), (-132.749, 91.866), (-132.386, 93.832), (-131.95, 95.784), (-131.451, 97.72), (-130.888, 99.64), (-130.264, 101.539), (-129.572, 103.416), (-128.816, 105.267), (-128.001, 107.093), (-127.125, 108.891), (-126.189, 110.658), (-125.185, 112.388), (-124.121, 114.081), (-122.997, 115.735), (-121.813, 117.347), (-120.563, 118.908), (-119.249, 120.416), (-117.876, 121.869), (-116.443, 123.264), (-114.943, 124.587), (-113.383, 125.837), (-111.766, 127.013), (-110.092, 128.107), (-108.357, 129.102), (-106.572, 130.004), (-104.742, 130.809), (-102.866, 131.5), (-100.951, 132.076), (-99.007, 132.542), (-97.038, 132.894), (-95.051, 133.112), (-93.054, 133.215), (-91.054, 133.204), (-89.059, 133.079), (-87.073, 132.841), (-85.105, 132.489), (-83.157, 132.038), (-81.233, 131.492), (-79.337, 130.856), (-77.472, 130.137), (-75.638, 129.34), (-73.837, 128.472), (-72.069, 127.536), (-70.335, 126.54), (-68.634, 125.488), (-66.966, 124.385), (-65.336, 123.226), (-63.739, 122.023), (-62.171, 120.781), (-59.156, 118.226), (-59.156, 118.226)]
 start_pos_size = -1
 
@@ -164,13 +168,14 @@ current_y =  -1
 previous_right_encoder = 0
 previous_left_encoder = 0
 forward_velocity = 5
-turn_velocity_k = 5
+turn_velocity_k = 10
 left_velocity = 5
 right_velocity = 5
 #forward_velocity/100
 wheel_circumference = 8.6393798
 feet_to_unit = 2.5
 gear_ratio = 3/4
+current_angle = 0
 
 
 def leftEncoder():
@@ -197,10 +202,9 @@ def update_position():
     # Calculate the robot's linear change
     delta_d = (delta_left + delta_right) / 2
    
-    current_x += delta_d * math.sin(current_angle)
-    current_y += delta_d * math.cos(current_angle)
-    # print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
- 
+    current_y += delta_d * math.sin(current_angle)
+    current_x += delta_d * math.cos(current_angle)
+    #print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
  
 def calculate_lookahead_point(points_list, n):
     global current_x, current_y, start_pos_size, forward_velocity
@@ -240,7 +244,6 @@ def calculate_lookahead_point(points_list, n):
  
 def calculate_drive_speeds(points_list):
     global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
-    current_angle = 2* math.pi - math.radians(gyro.heading(DEGREES))  # Get the current heading in radians
     dx = points_list[0][0] - current_x  # Calculate the difference in x
     dy = points_list[0][1] - current_y  # Calculate the difference in y
     #print("dx: "+ str(dx) + " dy: " + str(dy))
@@ -264,9 +267,10 @@ def calculate_drive_speeds(points_list):
      #   point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
 
 
+    print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle)  + " point_angle: " + str(point_angle) + " point_angle_diff: " + str(point_angle_diff))
     # Calculate the wheel velocities
-    left_velocity = forward_velocity + (point_angle_diff) * turn_velocity_k
-    right_velocity = forward_velocity - (point_angle_diff) * turn_velocity_k
+    left_velocity = forward_velocity - (point_angle_diff) * turn_velocity_k
+    right_velocity = forward_velocity + (point_angle_diff) * turn_velocity_k
 
     # Clamp the velocities to the range [-100, 100]
     left_velocity = max(min(left_velocity, 100), -100)
@@ -297,15 +301,20 @@ def walk_path(points_list):
         right_drive_smart.set_velocity(right_velocity, PERCENT)
         right_drive_smart.spin(FORWARD)
         update_position()
-        stall_detection_and_handling()
+        #stall_detection_and_handling()
     left_drive_smart.set_velocity(0, PERCENT)
     left_drive_smart.stop()
     right_drive_smart.set_velocity(0, PERCENT)
     right_drive_smart.stop()
 
 def autonomous_sample(): 
+    global current_x, current_y, current_angle
+    print("Starting autonomous sample")
     wait(3, SECONDS)
-    walk_path(red_left_tomogo)
+    while True:
+        update_position()
+        print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
+        wait(1, SECONDS)
 
 def autonomous_red_left():
     global intake_state
@@ -364,7 +373,7 @@ def set_drive_motor_velocities():
     if abs(left_joystick_y) < 5:
         left_drive_smart.stop()
     else:
-        print("Velocity: " + str(left_joystick_y) + " " + str(right_joystick_y))
+        #print("Velocity: " + str(left_joystick_y) + " " + str(right_joystick_y))
         left_drive_smart.spin(FORWARD)
 
     right_drive_smart.set_velocity(right_joystick_y, PERCENT)
@@ -409,7 +418,7 @@ def toggle_intake_motor():
             wait(100, MSEC)
 
     if controller_1.buttonR2.pressing():
-        intake_state = IntakeState.RUNNING if intake_state != IntakeState.STOPPED else IntakeState.STOPPED
+        intake_state = IntakeState.RUNNING if intake_state == IntakeState.STOPPED else IntakeState.STOPPED
         consecutive_stall_count = 0
         retry_count = 0
         high_score_stall = False        
@@ -421,8 +430,10 @@ def toggle_intake_motor():
 # Function to handle digital outputs based on controller buttons
 def handle_digital_outputs():
     if controller_1.buttonA.pressing():
+        print("Mogo 1")
         mogo_p.set(False)
     if controller_1.buttonY.pressing():
+        print("Mogo 2")
         mogo_p.set(True)
     if controller_1.buttonX.pressing():
         intake_p.set(False)
@@ -448,15 +459,15 @@ def autonomous():
     # Autonomous code
     # For example, move forward for a certain distance
     autonomous_red_left()
+    # autonomous_sample()
 
 # Driver control function
 def drivercontrol():
     # Main control loop for driver control
     while True:
         set_drive_motor_velocities()
-        toggle_high_scoring_motor()
+        #toggle_high_scoring_motor()
         toggle_intake_motor()
-        toggle_high_scoring_mode()
         handle_digital_outputs()
         stall_detection_and_handling()
         wait(20, MSEC)
@@ -472,11 +483,12 @@ def autonomous_empty():
 
 
 # Create a Competition object
-competition = Competition(drivercontrol, autonomous_empty)
+#competition = Competition(drivercontrol, autonomous_empty)
 
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
-    #autonomous()
+    autonomous()
     #drivercontrol()
-    pass
+
+main()
