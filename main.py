@@ -133,7 +133,8 @@ pos1_list = [(3.385, 110.743), (5.289, 111.357), (7.196, 111.958), (9.109, 112.5
 
 #Patjs
 #red_left_tomogo = [(-150.643, 34.664), (-148.909, 35.66), (-147.152, 36.615), (-145.372, 37.527), (-143.567, 38.39), (-141.741, 39.204), (-139.892, 39.968), (-138.024, 40.681), (-136.136, 41.34), (-134.23, 41.945), (-132.307, 42.496), (-130.37, 42.992), (-128.419, 43.435), (-126.458, 43.824), (-124.487, 44.163), (-122.508, 44.452), (-120.523, 44.696), (-118.533, 44.896), (-116.539, 45.056), (-114.543, 45.182), (-112.545, 45.277), (-110.547, 45.347), (-108.547, 45.397), (-106.548, 45.433), (-104.548, 45.461), (-102.548, 45.487), (-100.548, 45.518), (-98.549, 45.56), (-96.55, 45.619), (-94.551, 45.704), (-92.555, 45.821), (-90.561, 45.976), (-88.571, 46.177), (-86.587, 46.429), (-84.611, 46.738), (-82.646, 47.111), (-80.695, 47.55), (-78.761, 48.059), (-76.848, 48.642), (-74.959, 49.298), (-73.097, 50.026), (-71.265, 50.83), (-69.467, 51.705), (-67.703, 52.647), (-65.976, 53.655), (-64.286, 54.724), (-62.038, 56.275), (-62.038, 56.275)]
-red_left_tomogo = [(-150.643, 34.664), (-131.95, 42.486), (-111.877, 45.302), (-91.575, 45.984), (-71.944, 50.714), (-62.038, 56.275), (-62.038, 56.275)]
+#red_left_tomogo = [(-150.643, 34.664), (-131.95, 42.486), (-111.877, 45.302), (-91.575, 45.984), (-71.944, 50.714), (-62.038, 56.275), (-62.038, 56.275)]
+red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275), (-62.038, 56.275)]
 red_left_tofirststack = [(-93.734, 47.631), (-95.732, 47.532), (-97.731, 47.498), (-99.731, 47.533), (-101.727, 47.642), (-103.718, 47.83), (-105.699, 48.104), (-107.665, 48.467), (-109.612, 48.926), (-111.529, 49.493), (-113.412, 50.167), (-115.252, 50.949), (-117.043, 51.838), (-118.774, 52.839), (-120.427, 53.964), (-122.003, 55.194), (-123.497, 56.523), (-124.884, 57.963), (-126.174, 59.49), (-127.364, 61.098), (-128.433, 62.787), (-129.401, 64.537), (-130.26, 66.343), (-131.004, 68.198), (-131.651, 70.09), (-132.194, 72.015), (-132.633, 73.966), (-132.983, 75.935), (-133.243, 77.917), (-133.408, 79.91), (-133.491, 81.908), (-133.497, 83.908), (-133.422, 85.906), (-133.267, 87.9), (-133.043, 89.887), (-132.749, 91.866), (-132.386, 93.832), (-131.95, 95.784), (-131.451, 97.72), (-130.888, 99.64), (-130.264, 101.539), (-129.572, 103.416), (-128.816, 105.267), (-128.001, 107.093), (-127.125, 108.891), (-126.189, 110.658), (-125.185, 112.388), (-124.121, 114.081), (-122.997, 115.735), (-121.813, 117.347), (-120.563, 118.908), (-119.249, 120.416), (-117.876, 121.869), (-116.443, 123.264), (-114.943, 124.587), (-113.383, 125.837), (-111.766, 127.013), (-110.092, 128.107), (-108.357, 129.102), (-106.572, 130.004), (-104.742, 130.809), (-102.866, 131.5), (-100.951, 132.076), (-99.007, 132.542), (-97.038, 132.894), (-95.051, 133.112), (-93.054, 133.215), (-91.054, 133.204), (-89.059, 133.079), (-87.073, 132.841), (-85.105, 132.489), (-83.157, 132.038), (-81.233, 131.492), (-79.337, 130.856), (-77.472, 130.137), (-75.638, 129.34), (-73.837, 128.472), (-72.069, 127.536), (-70.335, 126.54), (-68.634, 125.488), (-66.966, 124.385), (-65.336, 123.226), (-63.739, 122.023), (-62.171, 120.781), (-59.156, 118.226), (-59.156, 118.226)]
 start_pos_size = -1
 
@@ -162,13 +163,13 @@ gyro.set_heading(0, DEGREES)
  
 gear_ratio = 3/4
 tolerance = 1
-lookahead = 1
+lookahead = 3
 current_x = -1
 current_y =  -1
 previous_right_encoder = 0
 previous_left_encoder = 0
-forward_velocity = 5
-turn_velocity_k = 10
+forward_velocity = 20
+turn_velocity_k = 30
 left_velocity = 5
 right_velocity = 5
 #forward_velocity/100
@@ -206,46 +207,49 @@ def update_position():
     current_x += delta_d * math.cos(current_angle)
     #print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
  
-def calculate_lookahead_point(points_list, n):
+def calculate_lookahead_point(points_list, n, lookahead_distance):
     global current_x, current_y, start_pos_size, forward_velocity
+    closest_offset = -1
+    closest_distance = float('inf')
 
-    if len(points_list) == 0:
-        return 
-
+    #if len(points_list) == 0:
+    #    return 
     min_distance = float('inf')
     min_index = -1  # To keep track of the nearest valid point index
 
     num_points = min(n, len(points_list))  # Number of points to check
+    lookahead_point = None
+    closest_point = points_list[0]
+    for i in range(num_points-1):
+        start = points_list[i]
+        end = points_list[i + 1]
+        segment_length = math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2)
+        if segment_length == 0:
+            continue
+        t = ((current_x - start[0]) * (end[0] - start[0]) + (current_y - start[1]) * (end[1] - start[1])) / segment_length ** 2
+        t = max(0, min(1, t))
+        closest_x = start[0] + t * (end[0] - start[0])
+        closest_y = start[1] + t * (end[1] - start[1])
+        distance = math.sqrt((closest_x - current_x) ** 2 + (closest_y - current_y) ** 2)
 
-    for i in range(num_points):
-        dx = points_list[i][0] - current_x
-        dy = points_list[i][1] - current_y
-        distance = math.sqrt(dx**2 + dy**2)
-        print("distance: "+ str(distance))
+        if distance < closest_distance:
+            closest_distance = distance
+            closest_offset = i
+            closest_point = (closest_x, closest_y)
 
-        if distance <= lookahead:
-            del points_list[:i+1]  # Remove the reached point in place
-            print("Dropping points " + str(i+1))
-            #print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[0][0]) + "pos y: " + str(points_list[0][1]) + "size: " + str(len(points_list)))
-            #forward_velocity = forward_velocity * (len(points_list)/start_pos_size) 
-            return
+        if distance >= lookahead_distance:
+            lookahead_point = (closest_x, closest_y)
+            break
 
-        if distance >= lookahead and distance < min_distance:
-            min_distance = distance
-            min_index = i
-            #if min_index != 0:
-            #    print("Other points are closer x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[i][0]) + "pos y: " + str(points_list[i][1]) + "size: " + str(len(points_list)))
-                
+    if closest_offset != -1:
+        del points_list[:i+1]
+        closest_offset = 0
+    return lookahead_point if lookahead_point else closest_point
 
-    #if min_index > 0:
-        # Pop all points before the nearest valid point
-    #    points_list = points_list[min_index:]
-        #forward_velocity = forward_velocity * (len(points_list)/start_pos_size) 
- 
-def calculate_drive_speeds(points_list):
+def calculate_drive_speeds(lookahead_point):
     global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
-    dx = points_list[0][0] - current_x  # Calculate the difference in x
-    dy = points_list[0][1] - current_y  # Calculate the difference in y
+    dx = lookahead_point[0] - current_x  # Calculate the difference in x
+    dy = lookahead_point[1] - current_y  # Calculate the difference in y
     #print("dx: "+ str(dx) + " dy: " + str(dy))
 
     # Calculate the angle to the target point
@@ -263,9 +267,8 @@ def calculate_drive_speeds(points_list):
    # Check if the point is behind the robot
    # if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
    #     # Reverse the direction
-    #    forward_velocity = -forward_velocity
-     #   point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
-
+    #   forward_velocity = -forward_velocity
+    #   point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
 
     print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle)  + " point_angle: " + str(point_angle) + " point_angle_diff: " + str(point_angle_diff))
     # Calculate the wheel velocities
@@ -286,14 +289,20 @@ def walk_path(points_list):
         current_y = points_list[0][1]
 
     running = True
+    next_point = points_list[0]
     while running:
         #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
         #print()
-        calculate_lookahead_point(points_list, 3)
+        next_point = calculate_lookahead_point(points_list, 3, 3)
+
         if points_list == []:
             running = False
             break
-        calculate_drive_speeds(points_list)
+
+        dist = math.sqrt((current_x - next_point[0]) ** 2 + (current_y - next_point[1]) ** 2)
+        if dist <= tolerance:
+            return
+        calculate_drive_speeds(next_point)
         #print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[0][0]) + "pos y: " + str(points_list[0][1]) + "size: " + str(len(points_list)))
         #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity) + " points x: " + str(points_list[0][0]) + " y: " + str(points_list[0][1]) + " len: " + str(len(points_list)))
         left_drive_smart.set_velocity(left_velocity, PERCENT)
@@ -301,6 +310,7 @@ def walk_path(points_list):
         right_drive_smart.set_velocity(right_velocity, PERCENT)
         right_drive_smart.spin(FORWARD)
         update_position()
+        wait(10, MSEC)
         #stall_detection_and_handling()
     left_drive_smart.set_velocity(0, PERCENT)
     left_drive_smart.stop()
@@ -331,14 +341,14 @@ def autonomous_red_left():
     # go to mogo
     walk_path(red_left_tomogo)
     # Capture the mogo
-    mogo_p.set(False)
+    mogo_p.set(True)
 
     # start intake to pick up the top donut including the stall code
     intake_state = IntakeState.RUNNING
     set_intake_motor_state(REVERSE)
 
     # Bring down the intake to knock off the top donut
-    intake_p.set(False)
+    intake_p.set(True)
     walk_path(red_left_tofirststack)
 
 # driver.py 
@@ -488,6 +498,8 @@ def autonomous_empty():
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
+    #mogo_p.set(False)
+    #intake_p.set(True)
     autonomous()
     #drivercontrol()
 
