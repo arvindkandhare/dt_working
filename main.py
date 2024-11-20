@@ -122,6 +122,7 @@ wait(30, MSEC)
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275), (-62.038, 56.275)]
 red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226), (-59.156, 118.226)]
+#red_left_tofirststack = [ (-59.156, 118.226)]
 blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
 blue_right_tofirststack = [(58.984, 75.725), (58.984, 96.045), (58.984, 101.595), (58.984, 118.947), (58.984, 118.947)]
 start_pos_size = -1
@@ -157,7 +158,7 @@ current_y =  -1
 previous_right_encoder = 0
 previous_left_encoder = 0
 forward_velocity = 20
-turn_velocity_k = 30
+turn_velocity_k = 15
 left_velocity = 5
 right_velocity = 5
 #forward_velocity/100
@@ -258,14 +259,18 @@ def calculate_drive_speeds(lookahead_point):
 
     if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
         # Reverse the direction
+       print("Reverse")
        curr_forward_velocity = -forward_velocity
        curr_turn_velocity_k = -turn_velocity_k
-       point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
-
-    print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle)  + " point_angle: " + str(point_angle) + " point_angle_diff: " + str(point_angle_diff))
+       point_angle_diff = math.pi - point_angle_diff if point_angle_diff > 0 else -math.pi - point_angle_diff
+       left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
+       right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
+    else:
     # Calculate the wheel velocities
-    left_velocity = curr_forward_velocity - (point_angle_diff) * curr_turn_velocity_k
-    right_velocity = curr_forward_velocity + (point_angle_diff) * curr_turn_velocity_k
+        left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
+        right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
+    
+    print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle) + " lv " + str (left_velocity) + " rv " + str(right_velocity))
 
     # Clamp the velocities to the range [-100, 100]
     left_velocity = max(min(left_velocity, 100), -100)
@@ -488,7 +493,8 @@ def autonomous():
     # For example, move forward for a certain distance
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
-    slot_no = 1
+    wait(3, SECONDS)
+    slot_no = 4
     if slot_no == 1:
         autonomous_empty()
     elif slot_no == 2:
