@@ -2,10 +2,7 @@
 
 from vex import *
 import time
-# utils.py
-
-from vex import *
-import time
+import urandom
 
 # Initialize devices
 brain = Brain()
@@ -119,24 +116,14 @@ def stall_detection_and_handling():
             retry_count -= 1
 
 
-from vex import *
-import urandom
-
-# Robot configuration code
-
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
 
-
-#list definitions
-pos1_list = [(3.385, 110.743), (5.289, 111.357), (7.196, 111.958), (9.109, 112.541), (11.03, 113.097), (12.956, 113.638), (14.887, 114.157), (16.826, 114.647), (18.77, 115.119), (20.719, 115.568), (22.675, 115.983), (24.636, 116.375), (26.602, 116.743), (28.574, 117.078), (30.551, 117.379), (32.532, 117.651), (34.518, 117.892), (36.507, 118.1), (38.5, 118.263), (40.496, 118.39), (42.494, 118.479), (44.493, 118.528), (46.493, 118.534), (48.492, 118.496), (50.491, 118.411), (52.486, 118.275), (54.477, 118.087), (56.463, 117.847), (58.441, 117.553), (60.41, 117.204), (62.368, 116.796), (64.313, 116.33), (66.242, 115.803), (68.153, 115.215), (70.044, 114.564), (71.911, 113.846), (73.751, 113.064), (75.564, 112.218), (77.345, 111.309), (79.093, 110.338), (80.805, 109.305), (82.48, 108.212), (84.115, 107.061), (85.704, 105.846), (87.249, 104.577), (88.75, 103.255), (90.206, 101.884), (91.616, 100.466), (92.979, 99.003), (94.292, 97.494), (95.557, 95.945), (96.775, 94.359), (97.948, 92.739), (99.076, 91.088), (100.159, 89.407), (101.199, 87.698), (102.192, 85.962), (103.144, 84.203), (104.055, 82.423), (104.927, 80.623), (105.761, 78.806), (106.559, 76.972), (107.32, 75.122), (108.047, 73.259), (108.741, 71.384), (109.403, 69.496), (110.033, 67.598), (110.632, 65.69), (111.203, 63.773), (111.745, 61.848), (112.261, 59.916), (112.751, 57.977), (113.216, 56.032), (113.657, 54.081), (114.075, 52.125), (114.471, 50.165), (114.845, 48.2), (115.199, 46.232), (115.533, 44.26), (115.847, 42.285), (116.143, 40.307), (116.421, 38.326), (116.681, 36.343), (116.926, 34.358), (117.154, 32.371), (117.366, 30.382), (117.564, 28.392), (117.747, 26.401), (117.916, 24.408), (118.072, 22.414), (118.215, 20.419), (118.345, 18.423), (118.464, 16.427), (118.571, 14.43), (118.667, 12.432), (118.752, 10.434), (118.827, 8.435), (118.892, 6.436), (118.948, 4.437), (118.994, 2.438), (119.032, 0.438), (119.062, -1.562), (118.923, -3.556), (118.753, -5.549), (118.568, -7.54), (118.371, -9.53), (118.166, -11.52), (117.943, -13.507), (117.709, -15.494), (117.466, -17.479), (117.202, -19.461), (116.927, -21.442), (116.641, -23.422), (116.335, -25.398), (116.014, -27.372), (115.681, -29.344), (115.33, -31.313), (114.959, -33.278), (114.574, -35.241), (114.173, -37.2), (113.751, -39.155), (113.309, -41.106), (112.849, -43.052), (112.371, -44.994), (111.873, -46.931), (111.349, -48.861), (110.805, -50.786), (110.239, -52.704), (109.651, -54.615), (109.039, -56.52), (108.404, -58.416), (107.74, -60.303), (107.05, -62.18), (106.334, -64.047), (105.591, -65.904), (104.82, -67.749), (104.02, -69.582), (103.19, -71.402), (102.33, -73.207), (101.439, -74.998), (100.515, -76.772), (99.56, -78.529), (98.571, -80.267), (97.548, -81.986), (96.492, -83.684), (95.401, -85.36), (94.275, -87.013), (93.114, -88.641), (91.917, -90.244), (90.686, -91.819), (89.415, -93.364), (88.11, -94.879), (86.77, -96.364), (85.395, -97.816), (83.987, -99.236), (82.545, -100.622), (81.067, -101.969), (79.557, -103.28), (78.016, -104.555), (76.446, -105.794), (74.846, -106.994), (73.215, -108.152), (71.559, -109.273), (69.878, -110.356), (68.173, -111.401), (66.442, -112.404), (64.691, -113.369), (62.919, -114.298), (61.13, -115.191), (59.321, -116.044), (57.496, -116.861), (55.656, -117.645), (53.802, -118.396), (51.935, -119.112), (50.055, -119.795), (48.165, -120.449), (46.265, -121.073), (44.356, -121.67), (42.438, -122.237), (40.513, -122.777), (38.58, -123.294), (36.642, -123.787), (34.698, -124.258), (32.749, -124.706), (30.795, -125.133), (28.838, -125.542), (26.876, -125.932), (24.911, -126.306), (22.944, -126.664), (20.973, -127.006), (19.0, -127.334), (17.025, -127.65), (15.049, -127.954), (13.07, -128.247), (11.09, -128.53), (9.109, -128.804), (7.127, -129.07), (5.144, -129.328), (3.16, -129.579), (0.279, -129.936), (0.279, -129.936), (0.279, -129.936)]
-
-#Patjs
-#red_left_tomogo = [(-150.643, 34.664), (-148.909, 35.66), (-147.152, 36.615), (-145.372, 37.527), (-143.567, 38.39), (-141.741, 39.204), (-139.892, 39.968), (-138.024, 40.681), (-136.136, 41.34), (-134.23, 41.945), (-132.307, 42.496), (-130.37, 42.992), (-128.419, 43.435), (-126.458, 43.824), (-124.487, 44.163), (-122.508, 44.452), (-120.523, 44.696), (-118.533, 44.896), (-116.539, 45.056), (-114.543, 45.182), (-112.545, 45.277), (-110.547, 45.347), (-108.547, 45.397), (-106.548, 45.433), (-104.548, 45.461), (-102.548, 45.487), (-100.548, 45.518), (-98.549, 45.56), (-96.55, 45.619), (-94.551, 45.704), (-92.555, 45.821), (-90.561, 45.976), (-88.571, 46.177), (-86.587, 46.429), (-84.611, 46.738), (-82.646, 47.111), (-80.695, 47.55), (-78.761, 48.059), (-76.848, 48.642), (-74.959, 49.298), (-73.097, 50.026), (-71.265, 50.83), (-69.467, 51.705), (-67.703, 52.647), (-65.976, 53.655), (-64.286, 54.724), (-62.038, 56.275), (-62.038, 56.275)]
-#red_left_tomogo = [(-150.643, 34.664), (-131.95, 42.486), (-111.877, 45.302), (-91.575, 45.984), (-71.944, 50.714), (-62.038, 56.275), (-62.038, 56.275)]
+#Paths
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275), (-62.038, 56.275)]
-#red_left_tofirststack = [(-93.734, 47.631), (-95.732, 47.532), (-97.731, 47.498), (-99.731, 47.533), (-101.727, 47.642), (-103.718, 47.83), (-105.699, 48.104), (-107.665, 48.467), (-109.612, 48.926), (-111.529, 49.493), (-113.412, 50.167), (-115.252, 50.949), (-117.043, 51.838), (-118.774, 52.839), (-120.427, 53.964), (-122.003, 55.194), (-123.497, 56.523), (-124.884, 57.963), (-126.174, 59.49), (-127.364, 61.098), (-128.433, 62.787), (-129.401, 64.537), (-130.26, 66.343), (-131.004, 68.198), (-131.651, 70.09), (-132.194, 72.015), (-132.633, 73.966), (-132.983, 75.935), (-133.243, 77.917), (-133.408, 79.91), (-133.491, 81.908), (-133.497, 83.908), (-133.422, 85.906), (-133.267, 87.9), (-133.043, 89.887), (-132.749, 91.866), (-132.386, 93.832), (-131.95, 95.784), (-131.451, 97.72), (-130.888, 99.64), (-130.264, 101.539), (-129.572, 103.416), (-128.816, 105.267), (-128.001, 107.093), (-127.125, 108.891), (-126.189, 110.658), (-125.185, 112.388), (-124.121, 114.081), (-122.997, 115.735), (-121.813, 117.347), (-120.563, 118.908), (-119.249, 120.416), (-117.876, 121.869), (-116.443, 123.264), (-114.943, 124.587), (-113.383, 125.837), (-111.766, 127.013), (-110.092, 128.107), (-108.357, 129.102), (-106.572, 130.004), (-104.742, 130.809), (-102.866, 131.5), (-100.951, 132.076), (-99.007, 132.542), (-97.038, 132.894), (-95.051, 133.112), (-93.054, 133.215), (-91.054, 133.204), (-89.059, 133.079), (-87.073, 132.841), (-85.105, 132.489), (-83.157, 132.038), (-81.233, 131.492), (-79.337, 130.856), (-77.472, 130.137), (-75.638, 129.34), (-73.837, 128.472), (-72.069, 127.536), (-70.335, 126.54), (-68.634, 125.488), (-66.966, 124.385), (-65.336, 123.226), (-63.739, 122.023), (-62.171, 120.781), (-59.156, 118.226), (-59.156, 118.226)]
 red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226), (-59.156, 118.226)]
+blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
+blue_right_tofirststack = [(58.984, 75.725), (58.984, 96.045), (58.984, 101.595), (58.984, 118.947), (58.984, 118.947)]
 start_pos_size = -1
 
 # Make random actually random
@@ -265,16 +252,20 @@ def calculate_drive_speeds(lookahead_point):
     elif point_angle_diff < -math.pi:
         point_angle_diff += 2 * math.pi
 
-   # Check if the point is behind the robot
+   # Check if the point is behind the robot and change velocities for this iteration
+    curr_forward_velocity = forward_velocity
+    curr_turn_velocity_k = turn_velocity_k
+
     if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
         # Reverse the direction
-       forward_velocity = -forward_velocity
+       curr_forward_velocity = -forward_velocity
+       curr_turn_velocity_k = -turn_velocity_k
        point_angle_diff = point_angle_diff - math.pi if point_angle_diff > 0 else point_angle_diff + math.pi
 
     print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle)  + " point_angle: " + str(point_angle) + " point_angle_diff: " + str(point_angle_diff))
     # Calculate the wheel velocities
-    left_velocity = forward_velocity - (point_angle_diff) * turn_velocity_k
-    right_velocity = forward_velocity + (point_angle_diff) * turn_velocity_k
+    left_velocity = curr_forward_velocity - (point_angle_diff) * curr_turn_velocity_k
+    right_velocity = curr_forward_velocity + (point_angle_diff) * curr_turn_velocity_k
 
     # Clamp the velocities to the range [-100, 100]
     left_velocity = max(min(left_velocity, 100), -100)
@@ -321,15 +312,28 @@ def walk_path(points_list):
 def autonomous_sample(): 
     global current_x, current_y, current_angle
     print("Starting autonomous sample")
-    wait(3, SECONDS)
     while True:
         update_position()
         print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
         wait(1, SECONDS)
 
+def autonomous_blue_right():
+    autonomous_more_donuts_side(blue_right_tomogo, blue_right_tofirststack)
+
 def autonomous_red_left():
+    autonomous_more_donuts_side(red_left_tomogo, red_left_tofirststack)
+
+def autonomous_red_right():
+    autonomous_extra_mogo_side(None, None)  #red_right_tomogo*/, nul /*red_right_tofirststack*
+        
+def autonomous_blue_left():
+    pass
+
+def autonomous_extra_mogo_side(tomogo, tofirststack):
+    autonomous_empty()
+
+def autonomous_more_donuts_side(tomogo, tofirststack):
     global intake_state
-    wait(3, SECONDS)
 
     #pick up intake so ramps drop
     intake_p.set(False)
@@ -340,7 +344,7 @@ def autonomous_red_left():
     set_high_scoring_motor_state(False)
 
     # go to mogo
-    walk_path(red_left_tomogo)
+    walk_path(tomogo)
     # Capture the mogo
     mogo_p.set(True)
 
@@ -350,7 +354,9 @@ def autonomous_red_left():
 
     # Bring down the intake to knock off the top donut
     intake_p.set(True)
-    walk_path(red_left_tofirststack)
+    walk_path(tofirststack)
+
+
 
 # driver.py 
 
@@ -361,6 +367,14 @@ def display_joystick_positions():
     #joystick_positions = f"{int(controller_1.axis3.position())} {int(controller_1.axis2.position())}"
     #brain.screen.print(joystick_positions)
     wait(0.1, SECONDS)
+
+def scale_joystick_input(input_value):
+    # Normalize the input to the range [-1, 1]
+    normalized_input = input_value / 100.0
+    # Apply cubic scaling
+    scaled_input = normalized_input ** 3
+    # Scale back to the range [-100, 100]
+    return scaled_input * 100
 
 # Function to set drive motor velocities based on controller input
 def set_drive_motor_velocities():
@@ -379,12 +393,15 @@ def set_drive_motor_velocities():
         left_joystick_y = controller_1.axis3.position()
         right_joystick_y = controller_1.axis2.position()
 
+    # Apply scaling to joystick inputs
+    left_joystick_y = scale_joystick_input(left_joystick_y)
+    right_joystick_y = scale_joystick_input(right_joystick_y)
+
     # Set velocities for left and right drive motors
     left_drive_smart.set_velocity(left_joystick_y, PERCENT)
     if abs(left_joystick_y) < 5:
         left_drive_smart.stop()
     else:
-        #print("Velocity: " + str(left_joystick_y) + " " + str(right_joystick_y))
         left_drive_smart.spin(FORWARD)
 
     right_drive_smart.set_velocity(right_joystick_y, PERCENT)
@@ -392,7 +409,7 @@ def set_drive_motor_velocities():
         right_drive_smart.stop()
     else:
         right_drive_smart.spin(FORWARD)
-
+        
 # Function to toggle the high scoring motor
 def toggle_high_scoring_motor():
     global high_scoring_running
@@ -469,8 +486,17 @@ def toggle_high_scoring_mode():
 def autonomous():
     # Autonomous code
     # For example, move forward for a certain distance
-    autonomous_red_left()
-    # autonomous_sample()
+    # define a variable slot_no and switch case based on the slot_no
+    # to run the corresponding autonomous routine
+    slot_no = 1
+    if slot_no == 1:
+        autonomous_empty()
+    elif slot_no == 2:
+        autonomous_blue_right()
+    elif slot_no == 3:
+        autonomous_empty()
+    elif slot_no == 4:
+        autonomous_red_left()
 
 # Driver control function
 def drivercontrol():
