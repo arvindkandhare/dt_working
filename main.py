@@ -197,7 +197,7 @@ def update_position():
     current_x += delta_d * math.cos(current_angle)
     #print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
  
-def calculate_lookahead_point(points_list, n, lookahead_distance):
+def calculate_lookahead_point(points_list, lookahead_distance):
     global current_x, current_y, start_pos_size, forward_velocity
     closest_offset = -1
     closest_distance = float('inf')
@@ -207,7 +207,7 @@ def calculate_lookahead_point(points_list, n, lookahead_distance):
     min_distance = float('inf')
     min_index = -1  # To keep track of the nearest valid point index
 
-    num_points = min(n, len(points_list))  # Number of points to check
+    num_points = len(points_list)  # Number of points to check
     lookahead_point = None
     closest_point = points_list[0]
     for i in range(num_points-1):
@@ -293,7 +293,7 @@ def walk_path(points_list):
     while running:
         #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
         #print()
-        next_point = calculate_lookahead_point(points_list, 3, 3)
+        next_point = calculate_lookahead_point(points_list, 5)
 
         if points_list == []:
             running = False
