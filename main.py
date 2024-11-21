@@ -21,8 +21,8 @@ High_scoring = Motor(Ports.PORT16)
 intake1 = Motor(Ports.PORT18)
 intake2 = Motor(Ports.PORT20)
 mogo_p = DigitalOut(brain.three_wire_port.b)
-intake_p = DigitalOut(brain.three_wire_port.c)
-donker = DigitalOut(brain.three_wire_port.d)
+donker = DigitalOut(brain.three_wire_port.c)
+intake_p = DigitalOut(brain.three_wire_port.d)
 
 # Constants
 MSEC_PER_SEC = 1000
@@ -151,14 +151,14 @@ gyro.set_heading(0, DEGREES)
  
  
 gear_ratio = 3/4
-tolerance = 1
+tolerance = 2
 lookahead = 3
 current_x = -1
 current_y =  -1
 previous_right_encoder = 0
 previous_left_encoder = 0
-forward_velocity = 20
-turn_velocity_k = 15
+forward_velocity = 30
+turn_velocity_k = 30
 left_velocity = 5
 right_velocity = 5
 #forward_velocity/100
@@ -230,7 +230,7 @@ def calculate_lookahead_point(points_list, n, lookahead_distance):
             lookahead_point = (closest_x, closest_y)
             break
 
-    if closest_offset != -1:
+    if closest_offset != -1 and lookahead_point:
         del points_list[:i+1]
         closest_offset = 0
     return lookahead_point if lookahead_point else closest_point
@@ -270,7 +270,7 @@ def calculate_drive_speeds(lookahead_point):
         left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
         right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
     
-    print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle) + " lv " + str (left_velocity) + " rv " + str(right_velocity))
+    print("x: "+ str(current_x)+" y: " + str(current_y)  + " lapoint: "+ str(lookahead_point) + " anglediff: " + str(point_angle_diff) + " lv " + str (left_velocity) + " rv " + str(right_velocity))
 
     # Clamp the velocities to the range [-100, 100]
     left_velocity = max(min(left_velocity, 100), -100)
@@ -284,6 +284,8 @@ def walk_path(points_list):
     if current_x == -1:
         current_x = points_list[0][0]
         current_y = points_list[0][1]
+    else:
+        points_list.insert(0, (current_x, current_y))
 
     running = True
     next_point = points_list[0]
@@ -296,19 +298,21 @@ def walk_path(points_list):
             running = False
             break
 
-        dist = math.sqrt((current_x - next_point[0]) ** 2 + (current_y - next_point[1]) ** 2)
+        dist = math.sqrt((current_x - points_list[-1][0]) ** 2 + (current_y - points_list[-1][1]) ** 2)
         if dist <= tolerance:
-            return
+            break
         calculate_drive_speeds(next_point)
-        #print("x: "+ str(current_x)+" y: " + str(current_y) + " pos x: " + str(points_list[0][0]) + "pos y: " + str(points_list[0][1]) + "size: " + str(len(points_list)))
-        #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity) + " points x: " + str(points_list[0][0]) + " y: " + str(points_list[0][1]) + " len: " + str(len(points_list)))
         left_drive_smart.set_velocity(left_velocity, PERCENT)
         left_drive_smart.spin(FORWARD)
         right_drive_smart.set_velocity(right_velocity, PERCENT)
         right_drive_smart.spin(FORWARD)
-        update_position()
+        if len(points_list) <= 1:
+            running = False
+            break
         wait(10, MSEC)
+        update_position()
         #stall_detection_and_handling()
+    print("Done")
     left_drive_smart.set_velocity(0, PERCENT)
     left_drive_smart.stop()
     right_drive_smart.set_velocity(0, PERCENT)
@@ -526,7 +530,7 @@ def autonomous_empty():
 
 
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous_empty)
+# competition = Competition(drivercontrol, autonomous_empty)
 
 def main():
     # Any initialization code before the match starts
@@ -534,6 +538,7 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     autonomous()
-    #drivercontrol()
+    #intake_p.set(True)
+    drivercontrol()
 
 main()
