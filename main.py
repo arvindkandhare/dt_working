@@ -122,6 +122,7 @@ wait(30, MSEC)
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275), (-62.038, 56.275)]
 red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226), (-59.156, 118.226)]
+red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (-34.453, 144.166), (-27.05, 133.892), (-21.979, 122.263), (-18.617, 110.025), (-16.793, 97.468), (-16.696, 94.821), (-16.696, 94.821)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
 blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
 blue_right_tofirststack = [(58.984, 75.725), (58.984, 96.045), (58.984, 101.595), (58.984, 118.947), (58.984, 118.947)]
@@ -327,10 +328,10 @@ def autonomous_sample():
         wait(1, SECONDS)
 
 def autonomous_blue_right():
-    autonomous_more_donuts_side(blue_right_tomogo, blue_right_tofirststack)
+    autonomous_more_donuts_side(blue_right_tomogo, blue_right_tofirststack, None)
 
 def autonomous_red_left():
-    autonomous_more_donuts_side(red_left_tomogo, red_left_tofirststack)
+    autonomous_more_donuts_side(red_left_tomogo, red_left_tofirststack, red_left_lasttwo)
 
 def autonomous_red_right():
     autonomous_extra_mogo_side(None, None)  #red_right_tomogo*/, nul /*red_right_tofirststack*
@@ -341,7 +342,7 @@ def autonomous_blue_left():
 def autonomous_extra_mogo_side(tomogo, tofirststack):
     autonomous_empty()
 
-def autonomous_more_donuts_side(tomogo, tofirststack):
+def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     global intake_state
 
     #pick up intake so ramps drop
@@ -356,7 +357,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack):
     walk_path(tomogo)
     # Capture the mogo
     mogo_p.set(True)
-
+    update_position()
     # start intake to pick up the top donut including the stall code
     intake_state = IntakeState.RUNNING
     set_intake_motor_state(REVERSE)
@@ -364,8 +365,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack):
     # Bring down the intake to knock off the top donut
     intake_p.set(True)
     walk_path(tofirststack)
-
-
+    walk_path(last_two)
 
 # driver.py 
 
