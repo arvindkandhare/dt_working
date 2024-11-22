@@ -120,7 +120,8 @@ def stall_detection_and_handling():
 wait(30, MSEC)
 
 #Paths
-red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
+#red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
+red_left_tomogo = [(0,0),(50,0),(100,00),(150,0), (200,0), (250,0), (250,0)]
 red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
 red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (-34.453, 144.166), (-27.05, 133.892), (-21.979, 122.263), (-18.617, 110.025), (-16.793, 97.468), (-16.696, 94.821), (-16.696, 94.821)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
@@ -146,13 +147,14 @@ def play_vexcode_sound(sound_name):
 
 #gyro start
 gyro = Inertial(Ports.PORT19)
+gyro.orientation(OrientationType.PITCH)
 gyro.calibrate()
 gyro.set_rotation(0, DEGREES)
 gyro.set_heading(0, DEGREES)
  
  
 gear_ratio = 3/4
-tolerance = 2
+tolerance = 6
 lookahead = 3
 current_x = -1
 current_y =  -1
@@ -198,7 +200,7 @@ def update_position():
     #print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
  
 def calculate_lookahead_point(points_list, lookahead_distance):
-    global current_x, current_y, start_pos_size, forward_velocity
+    global current_x, current_y, start_pos_size, forward_velocity, tolerance
     closest_offset = -1
     closest_distance = float('inf')
 
@@ -222,17 +224,24 @@ def calculate_lookahead_point(points_list, lookahead_distance):
         closest_y = start[1] + t * (end[1] - start[1])
         distance = math.sqrt((closest_x - current_x) ** 2 + (closest_y - current_y) ** 2)
 
+        if len(points_list) == 2 and distance <  2* tolerance:
+            closest_point = (points_list[1][0], points_list[1][1])
+            del points_list[0]
+            break
+
         if distance < closest_distance:
             closest_distance = distance
             closest_offset = i
             closest_point = (closest_x, closest_y)
 
         if distance >= lookahead_distance:
+            closest_offset = i
             lookahead_point = (closest_x, closest_y)
             break
 
-    if closest_offset != -1 and lookahead_point:
-        del points_list[:i]
+    if closest_offset > 0 :
+        print("Dropping :" + str(points_list[:i-1]))
+        del points_list[:i-1]
         closest_offset = 0
     return lookahead_point if lookahead_point else closest_point
 
@@ -240,7 +249,6 @@ def calculate_drive_speeds(lookahead_point):
     global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
     dx = lookahead_point[0] - current_x  # Calculate the difference in x
     dy = lookahead_point[1] - current_y  # Calculate the difference in y
-    #print("dx: "+ str(dx) + " dy: " + str(dy))
 
     # Calculate the angle to the target point
     point_angle = math.atan2(dy, dx)
@@ -258,9 +266,9 @@ def calculate_drive_speeds(lookahead_point):
     curr_forward_velocity = forward_velocity
     curr_turn_velocity_k = turn_velocity_k
 
-    if point_angle_diff > math.pi / 2 or point_angle_diff < -math.pi / 2:
+    if point_angle_diff > (math.pi / 2) or point_angle_diff < -(math.pi / 2):
         # Reverse the direction
-       print("Reverse")
+       print("Reverse " + str(current_angle) + " " + str(point_angle))   
        curr_forward_velocity = -forward_velocity
        curr_turn_velocity_k = -turn_velocity_k
        point_angle_diff = math.pi - point_angle_diff if point_angle_diff > 0 else -math.pi - point_angle_diff
@@ -271,14 +279,14 @@ def calculate_drive_speeds(lookahead_point):
         left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
         right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
     
-    print("x: "+ str(current_x)+" y: " + str(current_y)  + " lapoint: "+ str(lookahead_point) + " anglediff: " + str(point_angle_diff) + " lv " + str (left_velocity) + " rv " + str(right_velocity))
+    #print("x: "+ str(current_x)+" y: " + str(current_y)  + " lapoint: "+ str(lookahead_point) + " anglediff: " + str(point_angle_diff) + " lv " + str (left_velocity) + " rv " + str(right_velocity))
 
     # Clamp the velocities to the range [-100, 100]
     left_velocity = max(min(left_velocity, 100), -100)
     right_velocity = max(min(right_velocity, 100), -100)
 
 def walk_path(points_list):
-    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity
+    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity, tolerance
 
     start_pos_size = len(points_list)
 
@@ -293,20 +301,23 @@ def walk_path(points_list):
     while running:
         #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
         #print()
-        next_point = calculate_lookahead_point(points_list, 3)
+        next_point = calculate_lookahead_point(points_list, 5)
 
         if points_list == []:
             running = False
             break
 
         dist = math.sqrt((current_x - points_list[-1][0]) ** 2 + (current_y - points_list[-1][1]) ** 2)
+        print(" Dist: " + str(dist) + " tolerance "+ str(tolerance))
         if dist <= tolerance:
+            update_position()
             break
         calculate_drive_speeds(next_point)
         left_drive_smart.set_velocity(left_velocity, PERCENT)
         left_drive_smart.spin(FORWARD)
         right_drive_smart.set_velocity(right_velocity, PERCENT)
         right_drive_smart.spin(FORWARD)
+        update_position()
         if len(points_list) <= 1:
             running = False
             break
@@ -318,6 +329,7 @@ def walk_path(points_list):
     left_drive_smart.stop()
     right_drive_smart.set_velocity(0, PERCENT)
     right_drive_smart.stop()
+    wait(15, SECONDS)
 
 def autonomous_sample(): 
     global current_x, current_y, current_angle
@@ -530,7 +542,7 @@ def autonomous_empty():
 
 
 # Create a Competition object
-# competition = Competition(drivercontrol, autonomous_empty)
+#competition = Competition(drivercontrol, autonomous_empty)
 
 def main():
     # Any initialization code before the match starts
@@ -538,6 +550,11 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     autonomous()
+    while True:
+        global current_angle
+        update_position()
+        print(" gyro heading: " + str(current_angle))
+        wait(100, MSEC)
     #intake_p.set(True)
     #drivercontrol()
 
