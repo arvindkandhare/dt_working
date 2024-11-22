@@ -120,8 +120,8 @@ def stall_detection_and_handling():
 wait(30, MSEC)
 
 #Paths
-red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275), (-62.038, 56.275)]
-red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226), (-59.156, 118.226)]
+red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
+red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
 red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (-34.453, 144.166), (-27.05, 133.892), (-21.979, 122.263), (-18.617, 110.025), (-16.793, 97.468), (-16.696, 94.821), (-16.696, 94.821)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
 blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
@@ -232,7 +232,7 @@ def calculate_lookahead_point(points_list, lookahead_distance):
             break
 
     if closest_offset != -1 and lookahead_point:
-        del points_list[:i+1]
+        del points_list[:i]
         closest_offset = 0
     return lookahead_point if lookahead_point else closest_point
 
@@ -293,7 +293,7 @@ def walk_path(points_list):
     while running:
         #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
         #print()
-        next_point = calculate_lookahead_point(points_list, 5)
+        next_point = calculate_lookahead_point(points_list, 3)
 
         if points_list == []:
             running = False
@@ -539,6 +539,6 @@ def main():
     #intake_p.set(True)
     autonomous()
     #intake_p.set(True)
-    drivercontrol()
+    #drivercontrol()
 
 main()
