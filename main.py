@@ -123,7 +123,8 @@ wait(30, MSEC)
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
 #red_left_tomogo = [(150,00),(100,0), (50,0), (0,0)]
 #red_left_tomogo = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
-red_left_tofirststack = [(-66.948, 66.505), (-65.755, 81.698), (-63.714, 96.795), (-60.605, 111.714), (-59.156, 118.226), (-59.156, 118.226)]
+red_left_tofirststack = [(-66.948, 66.505), (-64.771, 81.588), (-63.049, 96.73), (-60.55, 111.758), (-59.156, 118.226), (-59.156, 118.226)]
+#[(-66.948, 66.505), (-65.755, 81.698), (-63.714, 96.795), (-60.605, 111.714), (-59.156, 118.226), (-59.156, 118.226)]
 #[(-66.948, 66.505), (-74.311, 79.794), (-75.997, 94.745), (-69.597, 108.353), (-59.156, 118.226), (-59.156, 118.226)]
 red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (-34.453, 144.166), (-27.05, 133.892), (-21.979, 122.263), (-18.617, 110.025), (-16.793, 97.468), (-16.696, 94.821), (-16.696, 94.821)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
@@ -531,8 +532,8 @@ def autonomous():
     # For example, move forward for a certain distance
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
-    wait(3, SECONDS)
-    slot_no = 4
+    #wait(3, SECONDS)
+    slot_no = 2
     if slot_no == 1:
         autonomous_empty()
     elif slot_no == 2:
@@ -564,11 +565,12 @@ def autonomous_empty():
 
 
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous_empty)
+#competition = Competition(drivercontrol, autonomous)
 
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
+    wait(3, SECONDS)
     #mogo_p.set(False)
     #intake_p.set(True)
     autonomous()
@@ -580,4 +582,4 @@ def main():
     #intake_p.set(True)
     #drivercontrol()
 
-main()
+#main()
