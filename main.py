@@ -123,6 +123,7 @@ wait(30, MSEC)
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
 #red_left_tomogo = [(150,00),(100,0), (50,0), (0,0)]
 #red_left_tomogo = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
+red_left_totower = [(-56.005, 109.686), (-48.833, 90.678), (-42.278, 71.445), (-35.999, 52.12), (-28.954, 28.954), (-28.954, 28.954)]
 red_left_tofirststack = [(-66.948, 66.505), (-64.771, 81.588), (-63.049, 96.73), (-60.55, 111.758), (-59.156, 118.226), (-59.156, 118.226)]
 #[(-66.948, 66.505), (-65.755, 81.698), (-63.714, 96.795), (-60.605, 111.714), (-59.156, 118.226), (-59.156, 118.226)]
 #[(-66.948, 66.505), (-74.311, 79.794), (-75.997, 94.745), (-69.597, 108.353), (-59.156, 118.226), (-59.156, 118.226)]
@@ -130,6 +131,7 @@ red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (
 #red_left_tofirststack = [ (-59.156, 118.226)]
 blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
 blue_right_tofirststack = [(58.984, 75.725), (58.984, 96.045), (58.984, 101.595), (58.984, 118.947), (58.984, 118.947)]
+blue_right_totower =  [(62.345, 117.716), (54.091, 99.15), (46.169, 80.438), (38.288, 61.709), (30.311, 43.02), (25.572, 34.448), (25.572, 34.448)]
 start_pos_size = -1
 
 # Make random actually random
@@ -359,10 +361,10 @@ def autonomous_sample():
         wait(1, SECONDS)
 
 def autonomous_blue_right():
-    autonomous_more_donuts_side(blue_right_tomogo, blue_right_tofirststack, None)
+    autonomous_more_donuts_side(blue_right_tomogo, blue_right_tofirststack, blue_right_totower)
 
 def autonomous_red_left():
-    autonomous_more_donuts_side(red_left_tomogo, red_left_tofirststack, red_left_lasttwo)
+    autonomous_more_donuts_side(red_left_tomogo, red_left_tofirststack, red_left_totower)
 
 def autonomous_red_right():
     autonomous_extra_mogo_side(None, None)  #red_right_tomogo*/, nul /*red_right_tofirststack*
