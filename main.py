@@ -535,12 +535,16 @@ def autonomous():
     #wait(3, SECONDS)
     slot_no = 2
     if slot_no == 1:
+        gyro.set_heading(180, DEGREES)
         autonomous_empty()
     elif slot_no == 2:
+        gyro.set_heading(180, DEGREES)
         autonomous_blue_right()
     elif slot_no == 3:
+        gyro.set_heading(0, DEGREES)
         autonomous_empty()
     elif slot_no == 4:
+        gyro.set_heading(0, DEGREES)
         autonomous_red_left()
 
 # Driver control function
