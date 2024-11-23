@@ -121,8 +121,10 @@ wait(30, MSEC)
 
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
-#red_left_tomogo = [(0,0),(50,0),(100,00),(150,0), (200,0), (250,0)]
-red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
+#red_left_tomogo = [(150,00),(100,0), (50,0), (0,0)]
+#red_left_tomogo = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
+red_left_tofirststack = [(-66.948, 66.505), (-65.755, 81.698), (-63.714, 96.795), (-60.605, 111.714), (-59.156, 118.226), (-59.156, 118.226)]
+#[(-66.948, 66.505), (-74.311, 79.794), (-75.997, 94.745), (-69.597, 108.353), (-59.156, 118.226), (-59.156, 118.226)]
 red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (-34.453, 144.166), (-27.05, 133.892), (-21.979, 122.263), (-18.617, 110.025), (-16.793, 97.468), (-16.696, 94.821), (-16.696, 94.821)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
 blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
@@ -155,7 +157,7 @@ gyro.set_heading(0, DEGREES)
  
 gear_ratio = 3/4
 tolerance = 6
-lookahead = 3
+lookahead = 5
 current_x = -1
 current_y =  -1
 previous_right_encoder = 0
@@ -254,11 +256,11 @@ def calculate_lookahead_point(points_list, lookahead_distance):
             break
 
     if closest_offset > 0 and lookahead_point is None:
-        #print("Dropping :" + str(points_list[:closest_offset]))
+        #print("Dropping1 :" + str(points_list[:closest_offset]))
         del points_list[:closest_offset]
         closest_offset = 0
     if lookahead_point:
-        #print("Dropping :" + str(points_list[:lookahead_offset]))
+        #print("Dropping2 :" + str(points_list[:lookahead_offset]))
         del points_list[:lookahead_offset]
     return lookahead_point if lookahead_point else closest_point
 
@@ -285,7 +287,7 @@ def calculate_drive_speeds(lookahead_point):
 
     if point_angle_diff > (math.pi / 2) or point_angle_diff < -(math.pi / 2):
         # Reverse the direction
-       print("Reverse " + str(current_angle) + " " + str(point_angle))   
+       #print("Reverse " + str(current_angle) + " " + str(point_angle))   
        curr_forward_velocity = -forward_velocity
        curr_turn_velocity_k = -turn_velocity_k
        point_angle_diff = math.pi - point_angle_diff if point_angle_diff > 0 else -math.pi - point_angle_diff
@@ -303,7 +305,7 @@ def calculate_drive_speeds(lookahead_point):
     right_velocity = max(min(right_velocity, 100), -100)
 
 def walk_path(points_list):
-    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity, tolerance
+    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity, tolerance, lookahead
 
     start_pos_size = len(points_list)
 
@@ -318,14 +320,14 @@ def walk_path(points_list):
     while running:
         #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
         #print()
-        next_point = calculate_lookahead_point(points_list, 5)
+        next_point = calculate_lookahead_point(points_list, lookahead)
 
         if points_list == []:
             running = False
             break
 
         dist = math.sqrt((current_x - points_list[-1][0]) ** 2 + (current_y - points_list[-1][1]) ** 2)
-        print(" Dist: " + str(dist) + " tolerance "+ str(tolerance))
+        #print(" Dist: " + str(dist) + " tolerance "+ str(tolerance))
         if dist <= tolerance:
             update_position()
             break
@@ -341,11 +343,11 @@ def walk_path(points_list):
         wait(10, MSEC)
         update_position()
         #stall_detection_and_handling()
-    print("Done")
     left_drive_smart.set_velocity(0, PERCENT)
     left_drive_smart.stop()
     right_drive_smart.set_velocity(0, PERCENT)
     right_drive_smart.stop()
+    print("Done")
 
 def autonomous_sample(): 
     global current_x, current_y, current_angle
@@ -374,7 +376,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     global intake_state
 
     #pick up intake so ramps drop
-    intake_p.set(False)
+    intake_p.set(True)
 
     # Bring up high scoring motor
     set_high_scoring_motor_state(True, FORWARD)
@@ -385,15 +387,19 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     walk_path(tomogo)
     # Capture the mogo
     mogo_p.set(True)
-    update_position()
+
     # start intake to pick up the top donut including the stall code
     intake_state = IntakeState.RUNNING
     set_intake_motor_state(REVERSE)
 
     # Bring down the intake to knock off the top donut
+    intake_p.set(False)
+    update_position()
     intake_p.set(True)
+    wait(250, MSEC)
+    intake_p.set(False)
     walk_path(tofirststack)
-    walk_path(last_two)
+    #walk_path(last_two)
 
 # driver.py 
 
