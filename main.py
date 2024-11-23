@@ -120,8 +120,8 @@ def stall_detection_and_handling():
 wait(30, MSEC)
 
 #Paths
-#red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
-red_left_tomogo = [(0,0),(50,0),(100,00),(150,0), (200,0), (250,0), (250,0)]
+red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
+#red_left_tomogo = [(0,0),(50,0),(100,00),(150,0), (200,0), (250,0)]
 red_left_tofirststack = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
 red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (-34.453, 144.166), (-27.05, 133.892), (-21.979, 122.263), (-18.617, 110.025), (-16.793, 97.468), (-16.696, 94.821), (-16.696, 94.821)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
@@ -202,6 +202,7 @@ def update_position():
 def calculate_lookahead_point(points_list, lookahead_distance):
     global current_x, current_y, start_pos_size, forward_velocity, tolerance
     closest_offset = -1
+    lookahead_offset = -1
     closest_distance = float('inf')
 
     #if len(points_list) == 0:
@@ -210,6 +211,19 @@ def calculate_lookahead_point(points_list, lookahead_distance):
     min_index = -1  # To keep track of the nearest valid point index
 
     num_points = len(points_list)  # Number of points to check
+    for i in range(num_points-1):
+        dist = math.sqrt((points_list[i][0] - current_x) ** 2 + (points_list[i][1] - current_y) ** 2)    
+        if dist < tolerance:
+            min_index = i
+        else:
+            break
+    if min_index != -1:
+        del points_list[:min_index]
+        min_index = -1
+        num_points = len(points_list)  # Number of points to check
+
+    if len(points_list) == 0:
+        return 
     lookahead_point = None
     closest_point = points_list[0]
     for i in range(num_points-1):
@@ -235,14 +249,17 @@ def calculate_lookahead_point(points_list, lookahead_distance):
             closest_point = (closest_x, closest_y)
 
         if distance >= lookahead_distance:
-            closest_offset = i
+            lookahead_offset = i
             lookahead_point = (closest_x, closest_y)
             break
 
-    if closest_offset > 0 :
-        print("Dropping :" + str(points_list[:i-1]))
-        del points_list[:i-1]
+    if closest_offset > 0 and lookahead_point is None:
+        #print("Dropping :" + str(points_list[:closest_offset]))
+        del points_list[:closest_offset]
         closest_offset = 0
+    if lookahead_point:
+        #print("Dropping :" + str(points_list[:lookahead_offset]))
+        del points_list[:lookahead_offset]
     return lookahead_point if lookahead_point else closest_point
 
 def calculate_drive_speeds(lookahead_point):
@@ -329,7 +346,6 @@ def walk_path(points_list):
     left_drive_smart.stop()
     right_drive_smart.set_velocity(0, PERCENT)
     right_drive_smart.stop()
-    wait(15, SECONDS)
 
 def autonomous_sample(): 
     global current_x, current_y, current_angle
