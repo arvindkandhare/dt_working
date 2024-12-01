@@ -1,8 +1,9 @@
 # main.py
 
+from os import urandom
 from vex import *
 import time
-import urandom
+
 
 # Initialize devices
 brain = Brain()
@@ -131,7 +132,7 @@ red_left_lasttwo = [(-69.531, 148.924), (-57.392, 152.459), (-44.93, 151.127), (
 #red_left_tofirststack = [ (-59.156, 118.226)]
 blue_right_tomogo = [(148.309, 121.108), (131.65, 109.473), (114.99, 97.838), (98.331, 86.203), (81.672, 74.568), (57.543, 57.716), (57.543, 57.716)]
 blue_right_tofirststack = [(58.984, 75.725), (58.984, 96.045), (58.984, 101.595), (58.984, 118.947), (58.984, 118.947)]
-blue_right_totower =  [(62.345, 117.716), (54.091, 99.15), (46.169, 80.438), (38.288, 61.709), (30.311, 43.02), (25.572, 34.448), (25.572, 34.448)]
+blue_right_totower =  [(62.345, 117.716), (46.169, 80.438), (38.288, 61.709), (30.311, 43.02), (25.572, 34.448), (25.572, 34.448)]
 start_pos_size = -1
 
 # Make random actually random
@@ -267,10 +268,11 @@ def calculate_lookahead_point(points_list, lookahead_distance):
         del points_list[:lookahead_offset]
     return lookahead_point if lookahead_point else closest_point
 
-def calculate_drive_speeds(lookahead_point):
+# Function to calculate drive speeds
+def calculate_drive_speeds(lookahead_point, direction):
     global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
-    dx = lookahead_point[0] - current_x  # Calculate the difference in x
-    dy = lookahead_point[1] - current_y  # Calculate the difference in y
+    dx = lookahead_point[0] - current_x
+    dy = lookahead_point[1] - current_y
 
     # Calculate the angle to the target point
     point_angle = math.atan2(dy, dx)
@@ -284,73 +286,63 @@ def calculate_drive_speeds(lookahead_point):
     elif point_angle_diff < -math.pi:
         point_angle_diff += 2 * math.pi
 
-   # Check if the point is behind the robot and change velocities for this iteration
-    curr_forward_velocity = forward_velocity
-    curr_turn_velocity_k = turn_velocity_k
-
-    if point_angle_diff > (math.pi / 2) or point_angle_diff < -(math.pi / 2):
-        # Reverse the direction
-       #print("Reverse " + str(current_angle) + " " + str(point_angle))   
-       curr_forward_velocity = -forward_velocity
-       curr_turn_velocity_k = -turn_velocity_k
-       point_angle_diff = math.pi - point_angle_diff if point_angle_diff > 0 else -math.pi - point_angle_diff
-       left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
-       right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
-    else:
-    # Calculate the wheel velocities
-        left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
-        right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
-    
-    #print("x: "+ str(current_x)+" y: " + str(current_y)  + " lapoint: "+ str(lookahead_point) + " anglediff: " + str(point_angle_diff) + " lv " + str (left_velocity) + " rv " + str(right_velocity))
+    # Calculate the wheel velocities based on the specified direction
+    curr_forward_velocity = forward_velocity * direction
+    curr_turn_velocity_k = turn_velocity_k * direction
+    left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
+    right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
 
     # Clamp the velocities to the range [-100, 100]
     left_velocity = max(min(left_velocity, 100), -100)
     right_velocity = max(min(right_velocity, 100), -100)
 
-def walk_path(points_list):
-    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity, tolerance, lookahead
+
+def walk_path(points_list, lookahead_distance, stop_threshold, direction):
+    global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity
 
     start_pos_size = len(points_list)
 
     if current_x == -1:
         current_x = points_list[0][0]
         current_y = points_list[0][1]
-    else:
-        points_list.insert(0, (current_x, current_y))
 
     running = True
-    next_point = points_list[0]
     while running:
-        #print("left vel: " +str(left_velocity) +" right_vel: " +str(right_velocity))
-        #print()
-        next_point = calculate_lookahead_point(points_list, lookahead)
-
-        if points_list == []:
+        if len(points_list) == 0:
             running = False
             break
 
-        dist = math.sqrt((current_x - points_list[-1][0]) ** 2 + (current_y - points_list[-1][1]) ** 2)
-        #print(" Dist: " + str(dist) + " tolerance "+ str(tolerance))
-        if dist <= tolerance:
-            update_position()
-            break
-        calculate_drive_speeds(next_point)
+        # Calculate the lookahead point
+        next_point = calculate_lookahead_point(points_list, lookahead_distance)
+
+        # Calculate drive speeds based on the specified direction
+        calculate_drive_speeds(next_point, direction)
+
+        # Update the robot's position
+        update_position()
+
+        # Check if the robot has reached the current target point
+        distance_to_point = math.sqrt((points_list[0][0] - current_x) ** 2 + (points_list[0][1] - current_y) ** 2)
+        if distance_to_point < stop_threshold:  # Adjust the threshold as needed
+            points_list.pop(0)  # Remove the reached point
+
+        # Check if the robot has reached the last point
+        if len(points_list) == 0:
+            final_distance = math.sqrt((points_list[-1][0] - current_x) ** 2 + (points_list[-1][1] - current_y) ** 2)
+            if final_distance < stop_threshold:
+                running = False
+
+        # Set motor velocities
         left_drive_smart.set_velocity(left_velocity, PERCENT)
         left_drive_smart.spin(FORWARD)
         right_drive_smart.set_velocity(right_velocity, PERCENT)
         right_drive_smart.spin(FORWARD)
-        update_position()
-        if len(points_list) <= 1:
-            running = False
-            break
-        wait(10, MSEC)
-        update_position()
-        #stall_detection_and_handling()
-    left_drive_smart.set_velocity(0, PERCENT)
+
+        wait(20, MSEC)
+
+    # Stop motors when path is complete
     left_drive_smart.stop()
-    right_drive_smart.set_velocity(0, PERCENT)
     right_drive_smart.stop()
-    print("Done")
 
 def autonomous_sample(): 
     global current_x, current_y, current_angle
@@ -376,7 +368,7 @@ def autonomous_extra_mogo_side(tomogo, tofirststack):
     autonomous_empty()
 
 def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
-    global intake_state
+    global intake_state, lookahead
 
     #pick up intake so ramps drop
     intake_p.set(True)
@@ -387,7 +379,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     set_high_scoring_motor_state(False)
 
     # go to mogo
-    walk_path(tomogo)
+    walk_path(tomogo, lookahead, tolerance, 1)
     # Capture the mogo
     mogo_p.set(True)
 
@@ -401,8 +393,10 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     intake_p.set(True)
     wait(250, MSEC)
     intake_p.set(False)
-    walk_path(tofirststack)
-    #walk_path(last_two)
+    walk_path(tofirststack, lookahead, tolerance, -1)
+    update_position()
+    lookahead = 20
+    walk_path(last_two, lookahead, tolerance, -1)
 
 # driver.py 
 
@@ -535,7 +529,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 2
+    slot_no = 5
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         autonomous_empty()
@@ -548,7 +542,16 @@ def autonomous():
     elif slot_no == 4:
         gyro.set_heading(0, DEGREES)
         autonomous_red_left()
+    elif slot_no == 5:
+        gyro.set_heading(0, DEGREES)
 
+        left_drive_smart.spin_to_position(((38/(2.75*(math.pi)))*360), DEGREES, 100, PERCENT)
+        right_drive_smart.spin_to_position(((38/(2.75*(math.pi)))*360), DEGREES, 100, PERCENT)
+        left_drive_smart.stop()
+        right_drive_smart.stop()
+        mogo_p.set(True)
+        intake1.set_velocity(100, PERCENT)
+        intake2.set_velocity(100, PERCENT)   
 # Driver control function
 def drivercontrol():
     # Main control loop for driver control
@@ -571,7 +574,7 @@ def autonomous_empty():
 
 
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous)
+competition = Competition(drivercontrol, autonomous)
 
 def main():
     # Any initialization code before the match starts
@@ -580,11 +583,7 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     autonomous()
-    while True:
-        global current_angle
-        update_position()
-        print(" gyro heading: " + str(current_angle))
-        wait(100, MSEC)
+    
     #intake_p.set(True)
     #drivercontrol()
 
