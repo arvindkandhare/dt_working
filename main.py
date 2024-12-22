@@ -1,6 +1,5 @@
 # main.py
 
-from os import urandom
 from vex import *
 import time
 
@@ -8,22 +7,24 @@ import time
 # Initialize devices
 brain = Brain()
 controller_1 = Controller(PRIMARY)
-left_motor_a = Motor(Ports.PORT1, GearSetting.RATIO_6_1, True)
-left_motor_b = Motor(Ports.PORT2, GearSetting.RATIO_6_1, True)
-left_motor_c = Motor(Ports.PORT3, GearSetting.RATIO_6_1, True)
+left_motor_a = Motor(Ports.PORT2, GearSetting.RATIO_6_1, True)
+left_motor_b = Motor(Ports.PORT3, GearSetting.RATIO_6_1, True)
+left_motor_c = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
  
-right_motor_a = Motor(Ports.PORT11, GearSetting.RATIO_6_1, False)
+right_motor_a = Motor(Ports.PORT5, GearSetting.RATIO_6_1, False)
 right_motor_b = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
-right_motor_c = Motor(Ports.PORT13, GearSetting.RATIO_6_1, False)
+right_motor_c = Motor(Ports.PORT17, GearSetting.RATIO_6_1, False)
  
 left_drive_smart = MotorGroup(left_motor_a, left_motor_b, left_motor_c)
 right_drive_smart = MotorGroup(right_motor_a, right_motor_b, right_motor_c)
-High_scoring = Motor(Ports.PORT16)
-intake1 = Motor(Ports.PORT18)
-intake2 = Motor(Ports.PORT20)
-mogo_p = DigitalOut(brain.three_wire_port.b)
-donker = DigitalOut(brain.three_wire_port.c)
+High_scoring = Motor(Ports.PORT20)
+intake1 = Motor(Ports.PORT1)
+intake2 = Motor(Ports.PORT13)
+mogo_p = DigitalOut(brain.three_wire_port.a)
+donker = DigitalOut(brain.three_wire_port.h)
 intake_p = DigitalOut(brain.three_wire_port.d)
+rotational_sensor = Rotation(Ports.PORT19, False)
+rotational_sensor.set_position(0, DEGREES)
 
 # Constants
 MSEC_PER_SEC = 1000
@@ -71,7 +72,7 @@ def set_intake_motor_state(direction=FORWARD):
         intake1.set_velocity(95, PERCENT)
         intake2.set_velocity(95, PERCENT)
         intake1.spin(direction)
-        intake2.spin( REVERSE if direction == FORWARD else FORWARD)
+        intake2.spin(REVERSE if direction == FORWARD else FORWARD)
         current_direction = direction
     else:
         intake1.stop()
@@ -122,7 +123,10 @@ wait(30, MSEC)
 
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
-#red_left_tomogo = [(150,00),(100,0), (50,0), (0,0)]
+
+# Testing paths
+decreasing_x = [(150,00),(100,0), (50,0), (0,0)]
+increasing_x = [(0,00),(50,0), (100,0), (0,0)]
 #red_left_tomogo = [(-57.389, 70.195), (-57.595, 85.434), (-58.117, 100.664), (-58.991, 115.879), (-59.156, 118.226)]
 red_left_totower = [(-56.005, 109.686), (-48.833, 90.678), (-42.278, 71.445), (-35.999, 52.12), (-28.954, 28.954), (-28.954, 28.954)]
 red_left_tofirststack = [(-66.948, 66.505), (-64.771, 81.588), (-63.049, 96.73), (-60.55, 111.758), (-59.156, 118.226), (-59.156, 118.226)]
@@ -139,7 +143,7 @@ start_pos_size = -1
 def initializeRandomSeed():
     wait(100, MSEC)
     random = brain.battery.voltage(MV) + brain.battery.current(CurrentUnits.AMP) * 100 + brain.timer.system_high_res()
-    urandom.seed(int(random))
+    #urandom.seed(int(random))
       
 # Set random seed 
 initializeRandomSeed()
@@ -152,8 +156,8 @@ def play_vexcode_sound(sound_name):
     wait(5, MSEC)
 
 #gyro start
-gyro = Inertial(Ports.PORT19)
-gyro.orientation(OrientationType.PITCH)
+gyro = Inertial(Ports.PORT14)
+gyro.orientation(OrientationType.YAW)
 gyro.calibrate()
 gyro.set_rotation(0, DEGREES)
 gyro.set_heading(0, DEGREES)
@@ -317,6 +321,7 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
 
         # Calculate drive speeds based on the specified direction
         calculate_drive_speeds(next_point, direction)
+        print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle) + " lspeed" + str(left_velocity) + " rspeed" + str(right_velocity))
 
         # Update the robot's position
         update_position()
@@ -379,7 +384,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     set_high_scoring_motor_state(False)
 
     # go to mogo
-    walk_path(tomogo, lookahead, tolerance, 1)
+    walk_path(tomogo, lookahead, tolerance, -1)
     # Capture the mogo
     mogo_p.set(True)
 
@@ -393,7 +398,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     intake_p.set(True)
     wait(250, MSEC)
     intake_p.set(False)
-    walk_path(tofirststack, lookahead, tolerance, -1)
+    walk_path(tofirststack, lookahead, tolerance, 1)
     update_position()
     lookahead = 20
     walk_path(last_two, lookahead, tolerance, -1)
@@ -529,7 +534,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 5
+    slot_no = 4
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         autonomous_empty()
@@ -540,7 +545,7 @@ def autonomous():
         gyro.set_heading(0, DEGREES)
         autonomous_empty()
     elif slot_no == 4:
-        gyro.set_heading(0, DEGREES)
+        gyro.set_heading(180, DEGREES)
         autonomous_red_left()
     elif slot_no == 5:
         gyro.set_heading(0, DEGREES)
@@ -557,7 +562,7 @@ def drivercontrol():
     # Main control loop for driver control
     while True:
         set_drive_motor_velocities()
-        #toggle_high_scoring_motor()
+        toggle_high_scoring_motor()
         toggle_intake_motor()
         handle_digital_outputs()
         stall_detection_and_handling()
@@ -572,19 +577,24 @@ def autonomous_empty():
     left_drive_smart.stop()
     right_drive_smart.stop()
 
+def autonomous_test():
+    global lookahead, tolerance, increasing_x
+    walk_path(increasing_x, lookahead, tolerance, 1)
+
 
 # Create a Competition object
-competition = Competition(drivercontrol, autonomous)
+#competition = Competition(drivercontrol, autonomous)
 
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
-    wait(3, SECONDS)
+    #wait(3, SECONDS)
     #mogo_p.set(False)
     #intake_p.set(True)
-    autonomous()
-    
+    #autonomous_test()
+    drivercontrol()
     #intake_p.set(True)
     #drivercontrol()
 
-#main()
+
+main()
