@@ -20,7 +20,7 @@ right_drive_smart = MotorGroup(right_motor_a, right_motor_b, right_motor_c)
 High_scoring = Motor(Ports.PORT20)
 intake1 = Motor(Ports.PORT1)
 intake2 = Motor(Ports.PORT13)
-mogo_p = DigitalOut(brain.three_wire_port.a)
+mogo_p = DigitalOut(brain.three_wire_port.f)
 donker = DigitalOut(brain.three_wire_port.h)
 intake_p = DigitalOut(brain.three_wire_port.d)
 rotational_sensor = Rotation(Ports.PORT19, False)
@@ -48,22 +48,25 @@ STALL_THRESHOLD = 5       # Adjust as needed
 STALL_COUNT = 5
 RETRY_LIMIT = 30
 MSEC_PER_SEC = 1000
-
+# Define constants for the target angles
+HIGH_SCORE_TARGET_ANGLE_SCORE = 240
+HIGH_SCORE_TARGET_ANGLE_WAIT = 75
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = 25
+HIGH_SCORE_TARGET_ANGLE_DOWN = 0
 # Global variables
 retry_count = 0
 consecutive_stall_count = 0
 high_scoring_running = False
 high_score_stall = False  # Set this accordingly in your main code if needed
+high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_DOWN
 
 # Function to set the state of the high scoring motor
-def set_high_scoring_motor_state(state, direction=FORWARD, angle=0):
-    global high_scoring_running
-    if state:
-        High_scoring.set_velocity(95, PERCENT)
-        High_scoring.spin(direction)
-    else:
-        High_scoring.stop()
-    high_scoring_running = state
+def adjust_high_scoring_motor_position():
+    global high_score_target_angle
+
+    High_scoring.set_stopping(BRAKE)
+    High_scoring.spin_to_position(high_score_target_angle, DEGREES, 30, PERCENT, False)
+
 
 # Function to set the state of the intake motor
 def set_intake_motor_state(direction=FORWARD):
@@ -83,7 +86,7 @@ def stall_detection_and_handling():
     global intake_state, consecutive_stall_count, retry_count, high_score_stall
     global current_direction
     if intake_state == IntakeState.RUNNING or intake_state == IntakeState.STALLED:
-        current_velocity = intake1.velocity(PERCENT)
+        current_velocity = intake2.velocity(PERCENT)
         if abs(current_velocity) <= STALL_THRESHOLD:
             #print("Stalled" + str(consecutive_stall_count))
             consecutive_stall_count += 1
@@ -379,9 +382,8 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     intake_p.set(True)
 
     # Bring up high scoring motor
-    set_high_scoring_motor_state(True, FORWARD)
-    wait(1, SECONDS)
-    set_high_scoring_motor_state(False)
+    high_score_target_angle = 75
+    adjust_high_scoring_motor_position()
 
     # go to mogo
     walk_path(tomogo, lookahead, tolerance, -1)
@@ -424,9 +426,9 @@ def scale_joystick_input(input_value):
 # Function to set drive motor velocities based on controller input
 def set_drive_motor_velocities():
     global reverse_drive
-    if controller_1.buttonUp.pressing():
+    if controller_1.buttonA.pressing():
         reverse_drive = not reverse_drive
-        while controller_1.buttonUp.pressing():
+        while controller_1.buttonA.pressing():
             wait(10, MSEC)
 
     if reverse_drive:
@@ -457,20 +459,30 @@ def set_drive_motor_velocities():
         
 # Function to toggle the high scoring motor
 def toggle_high_scoring_motor():
-    global high_scoring_running
-    if controller_1.buttonL1.pressing():
-        wait(100, MSEC)  # Debounce delay
-        high_scoring_running = not high_scoring_running
-        set_high_scoring_motor_state(high_scoring_running, FORWARD)
-        while controller_1.buttonL1.pressing():
-            wait(1000, MSEC)
+    global high_scoring_running, high_score_target_angle
+    if controller_1.buttonLeft.pressing():
+        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_SCORE
+        high_scoring_running = False
+        while controller_1.buttonLeft.pressing():
+            wait(10, MSEC)
 
-    if controller_1.buttonL2.pressing():
-        wait(100, MSEC)  # Debounce delay
-        high_scoring_running = not high_scoring_running
-        set_high_scoring_motor_state(high_scoring_running, REVERSE)
-        while controller_1.buttonL2.pressing():
-            wait(1000, MSEC)
+    if controller_1.buttonUp.pressing():
+        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+        high_scoring_running = False
+        while controller_1.buttonLeft.pressing():
+            wait(10, MSEC)
+
+    if controller_1.buttonRight.pressing():
+        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_CAPTURE
+        high_scoring_running = True
+        while controller_1.buttonLeft.pressing():
+            wait(10, MSEC)
+
+    if controller_1.buttonDown.pressing():
+        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_DOWN
+        high_scoring_running = False
+        while controller_1.buttonDown.pressing():
+            wait(10, MSEC)
 
 # Function to toggle the intake motor
 def toggle_intake_motor():
@@ -502,30 +514,18 @@ def toggle_intake_motor():
 
 # Function to handle digital outputs based on controller buttons
 def handle_digital_outputs():
-    if controller_1.buttonA.pressing():
+    if controller_1.buttonL1.pressing():
         print("Mogo 1")
         mogo_p.set(False)
-    if controller_1.buttonY.pressing():
+    if controller_1.buttonL2.pressing():
         print("Mogo 2")
         mogo_p.set(True)
     if controller_1.buttonX.pressing():
-        intake_p.set(False)
-    if controller_1.buttonB.pressing():
-        intake_p.set(True)
-    if controller_1.buttonLeft.pressing():
+        intake_p.set(not intake_p.value())
+    if controller_1.buttonY.pressing():
         donker.set(True)
-    if controller_1.buttonRight.pressing():
+    if controller_1.buttonB.pressing():
         donker.set(False)
-
-
-# Function to toggle high scoring mode
-def toggle_high_scoring_mode():
-    global high_scoring_mode
-    if controller_1.buttonDown.pressing():
-        wait(100, MSEC)  # Debounce delay
-        high_scoring_mode = not high_scoring_mode
-        while controller_1.buttonDown.pressing():
-            wait(10, MSEC)
 
 # Autonomous function
 def autonomous():
@@ -563,6 +563,7 @@ def drivercontrol():
     while True:
         set_drive_motor_velocities()
         toggle_high_scoring_motor()
+        adjust_high_scoring_motor_position()
         toggle_intake_motor()
         handle_digital_outputs()
         stall_detection_and_handling()
@@ -580,21 +581,22 @@ def autonomous_empty():
 def autonomous_test():
     global lookahead, tolerance, increasing_x
     walk_path(increasing_x, lookahead, tolerance, 1)
-
+    
+def unscoring():
+    print("Hi")
 
 # Create a Competition object
 #competition = Competition(drivercontrol, autonomous)
-
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
-    #wait(3, SECONDS)
+    wait(3, SECONDS)
     #mogo_p.set(False)
     #intake_p.set(True)
-    #autonomous_test()
+    #autonomous()
     drivercontrol()
     #intake_p.set(True)
-    #drivercontrol()
-
+    #drive
+    #unscoring()
 
 main()
