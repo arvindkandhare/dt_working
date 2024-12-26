@@ -18,8 +18,8 @@ right_motor_c = Motor(Ports.PORT17, GearSetting.RATIO_6_1, False)
 left_drive_smart = MotorGroup(left_motor_a, left_motor_b, left_motor_c)
 right_drive_smart = MotorGroup(right_motor_a, right_motor_b, right_motor_c)
 High_scoring = Motor(Ports.PORT20)
-intake1 = Motor(Ports.PORT1)
-intake2 = Motor(Ports.PORT13)
+intake_lower = Motor(Ports.PORT1)
+intake_upper = Motor(Ports.PORT13)
 mogo_p = DigitalOut(brain.three_wire_port.f)
 donker = DigitalOut(brain.three_wire_port.h)
 intake_p = DigitalOut(brain.three_wire_port.d)
@@ -49,7 +49,7 @@ STALL_COUNT = 5
 RETRY_LIMIT = 30
 MSEC_PER_SEC = 1000
 # Define constants for the target angles
-HIGH_SCORE_TARGET_ANGLE_SCORE = 240
+HIGH_SCORE_TARGET_ANGLE_SCORE = 300
 HIGH_SCORE_TARGET_ANGLE_WAIT = 75
 HIGH_SCORE_TARGET_ANGLE_CAPTURE = 25
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
@@ -72,21 +72,24 @@ def adjust_high_scoring_motor_position():
 def set_intake_motor_state(direction=FORWARD):
     global intake_state, current_direction
     if intake_state == IntakeState.RUNNING or intake_state == IntakeState.FIXINGSTALL:
-        intake1.set_velocity(95, PERCENT)
-        intake2.set_velocity(95, PERCENT)
-        intake1.spin(direction)
-        intake2.spin(REVERSE if direction == FORWARD else FORWARD)
+        intake_lower.set_velocity(95, PERCENT)
+        intake_upper.set_velocity(95, PERCENT)
+        intake_lower.spin(direction)
+        if intake_state == IntakeState.FIXINGSTALL:
+            intake_upper.spin(direction)
+        else:
+            intake_upper.spin(REVERSE if direction == FORWARD else FORWARD)
         current_direction = direction
     else:
-        intake1.stop()
-        intake2.stop()
+        intake_lower.stop()
+        intake_upper.stop()
 
 # Stall detection and handling for the intake motor
 def stall_detection_and_handling():
-    global intake_state, consecutive_stall_count, retry_count, high_score_stall
+    global intake_state, consecutive_stall_count, retry_count, high_score_stall, high_score_target_angle, high_scoring_running
     global current_direction
     if intake_state == IntakeState.RUNNING or intake_state == IntakeState.STALLED:
-        current_velocity = intake2.velocity(PERCENT)
+        current_velocity = intake_upper.velocity(PERCENT)
         if abs(current_velocity) <= STALL_THRESHOLD:
             #print("Stalled" + str(consecutive_stall_count))
             consecutive_stall_count += 1
@@ -96,11 +99,13 @@ def stall_detection_and_handling():
         if consecutive_stall_count >= STALL_COUNT:
             #print("Unstaling")
             intake_state = IntakeState.FIXINGSTALL
-            # Start in opposite direction
-            current_direction = REVERSE if current_direction == FORWARD else FORWARD
+            # This state will change upper motor in opposite direction
             set_intake_motor_state(current_direction)
             if high_scoring_running:
                 high_score_stall = True
+                high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+                adjust_high_scoring_motor_position()
+                high_scoring_running = False
             consecutive_stall_count = 0
             retry_count = RETRY_LIMIT
     else:
@@ -114,10 +119,9 @@ def stall_detection_and_handling():
             else:
                 #print("Fixed")
                 intake_state = IntakeState.RUNNING
-                current_direction = REVERSE if current_direction == FORWARD else FORWARD
                 set_intake_motor_state(current_direction)
         else:
-            print("Retrying")
+            #print("Retrying")
             retry_count -= 1
 
 
@@ -555,8 +559,8 @@ def autonomous():
         left_drive_smart.stop()
         right_drive_smart.stop()
         mogo_p.set(True)
-        intake1.set_velocity(100, PERCENT)
-        intake2.set_velocity(100, PERCENT)   
+        intake_lower.set_velocity(100, PERCENT)
+        intake_upper.set_velocity(100, PERCENT)   
 # Driver control function
 def drivercontrol():
     # Main control loop for driver control
