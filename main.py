@@ -26,6 +26,7 @@ intake_p = DigitalOut(brain.three_wire_port.d)
 rotational_sensor = Rotation(Ports.PORT19, False)
 rotational_sensor.set_position(0, DEGREES)
 
+Vision_sessor = Vision(Ports.PORT21)
 # Constants
 MSEC_PER_SEC = 1000
 
@@ -51,7 +52,7 @@ MSEC_PER_SEC = 1000
 # Define constants for the target angles
 HIGH_SCORE_TARGET_ANGLE_SCORE = 900
 HIGH_SCORE_TARGET_ANGLE_WAIT = 300
-HIGH_SCORE_TARGET_ANGLE_CAPTURE = 100
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = 90
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
 # Global variables
 retry_count = 0
@@ -412,6 +413,52 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
 
 # driver.py 
 
+# Define the color signatures based of the config copied below
+REDD = Signature(1, 9907, 12073, 10990, -1991, -879, -1435, 2.5, 0)
+BLUEE = Signature(2, -4415, -3205, -3810, 5461, 8989, 7225, 2.5, 0)
+'''{
+  "brightness": 50,
+  "signatures": [
+    {
+      "name": "REDD",
+      "parameters": {
+        "uMin": 9907,
+        "uMax": 12073,
+        "uMean": 10990,
+        "vMin": -1991,
+        "vMax": -879,
+        "vMean": -1435,
+        "rgb": 5973535,
+        "type": 0,
+        "name": "REDD"
+      },
+      "range": 2.5
+    },
+    {
+      "name": "BLUEE",
+      "parameters": {
+        "uMin": -4415,
+        "uMax": -3205,
+        "uMean": -3810,
+        "vMin": 5461,
+        "vMax": 8989,
+        "vMean": 7225,
+        "rgb": 1714760,
+        "type": 0,
+        "name": "BLUEE"
+      },
+      "range": 2.5
+    }
+  ],
+  "codes": []
+}'''
+# Function to check the vision sensor
+def check_vision_sensor():
+    seen_objects = Vision_sessor.take_snapshot(REDD)
+    if seen_objects:
+        print("Blue" + str(seen_objects.count))
+        # Add your code here to handle the blue object
+
 # Function to display joystick positions (optional)
 def display_joystick_positions():
     brain.screen.clear_screen()
@@ -570,6 +617,7 @@ def drivercontrol():
         toggle_high_scoring_motor()
         adjust_high_scoring_motor_position()
         toggle_intake_motor()
+        check_vision_sensor()
         handle_digital_outputs()
         stall_detection_and_handling()
 

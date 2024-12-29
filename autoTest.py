@@ -49,9 +49,9 @@ STALL_COUNT = 5
 RETRY_LIMIT = 30
 MSEC_PER_SEC = 1000
 # Define constants for the target angles
-HIGH_SCORE_TARGET_ANGLE_SCORE = 300
-HIGH_SCORE_TARGET_ANGLE_WAIT = 75
-HIGH_SCORE_TARGET_ANGLE_CAPTURE = 25
+HIGH_SCORE_TARGET_ANGLE_SCORE = 900
+HIGH_SCORE_TARGET_ANGLE_WAIT = 300
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = 90
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
 # Global variables
 retry_count = 0
@@ -322,6 +322,8 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
 
     running = True
     while running:
+        adjust_high_scoring_motor_position()
+        stall_detection_and_handling()
         if len(points_list) == 1:
             running = False
             break
@@ -586,9 +588,16 @@ def autonomous_empty():
     right_drive_smart.stop()
 
 def autonomous_test():
-    global lookahead, tolerance, increasing_x, test_square
+    global lookahead, tolerance, increasing_x, test_square, intake_state, high_score_target_angle
     #walk_path(increasing_x, lookahead, tolerance, 1)
-    walk_path(test_square, lookahead, tolerance, -1)
+    mogo_p.set(True)
+    wait(1, SECONDS)
+    high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+    adjust_high_scoring_motor_position()
+    intake_state = IntakeState.RUNNING  
+    set_intake_motor_state(REVERSE)
+
+    walk_path(test_square, lookahead, tolerance, 1)
     
 def unscoring():
     print("Hi")
