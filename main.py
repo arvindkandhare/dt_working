@@ -50,9 +50,9 @@ STALL_COUNT = 5
 RETRY_LIMIT = 30
 MSEC_PER_SEC = 1000
 # Define constants for the target angles
-HIGH_SCORE_TARGET_ANGLE_SCORE = 900
-HIGH_SCORE_TARGET_ANGLE_WAIT = 300
-HIGH_SCORE_TARGET_ANGLE_CAPTURE = 90
+HIGH_SCORE_TARGET_ANGLE_SCORE = 450
+HIGH_SCORE_TARGET_ANGLE_WAIT = 150
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = 45
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
 # Global variables
 retry_count = 0
@@ -165,7 +165,7 @@ def play_vexcode_sound(sound_name):
     wait(5, MSEC)
 
 #gyro start
-gyro = Inertial(Ports.PORT14)
+gyro = Inertial(Ports.PORT11)
 gyro.orientation(OrientationType.YAW)
 gyro.calibrate()
 gyro.set_rotation(0, DEGREES)
@@ -634,7 +634,7 @@ def autonomous_empty():
 
 def autonomous_test():
     global lookahead, tolerance, increasing_x
-    walk_path(increasing_x, lookahead, tolerance, 1)
+    walk_path(increasing_x, lookahead, tolerance, -1)
     
 def unscoring():
     print("Hi")
