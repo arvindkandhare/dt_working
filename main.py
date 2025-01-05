@@ -99,7 +99,7 @@ RETRY_LIMIT = 10
 EJECT_LIMIT= 20
 MSEC_PER_SEC = 1000
 # Define constants for the target angles
-HIGH_SCORE_TARGET_ANGLE_SCORE = 450
+HIGH_SCORE_TARGET_ANGLE_SCORE = 360
 HIGH_SCORE_TARGET_ANGLE_WAIT = 150
 HIGH_SCORE_TARGET_ANGLE_CAPTURE = 45
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
@@ -188,6 +188,7 @@ def stall_detection_and_handling():
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
+
 
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-132.813, 121.614), (-116.614, 109.405), (-101.657, 95.657), (-87.22, 81.358), (-72.93, 66.912), (-62.038, 56.275)]
@@ -471,12 +472,21 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
     walk_path(last_two, lookahead, tolerance, -1)
 
 # driver.py 
+def valid_seen_object(seen_objects):
+    # A placeholder to check if the objects array is valid
+    if len(seen_objects) > 0:
+        for obj in seen_objects:
+            object_size = obj.width * obj.height
+            #print("Detected object with size: " + str(object_size))
+            if object_size > 1000:
+                return True
+    return False
 
 # Function to check the vision sensor
 def check_vision_sensor():
     global eject_object
     seen_objects = Vision_sessor.take_snapshot(REDD)
-    if seen_objects:
+    if seen_objects and valid_seen_object(seen_objects):
         if eject_object == RingType.RED:
            print("Ejecting Red")
            ejection_p.set(True)
@@ -484,13 +494,12 @@ def check_vision_sensor():
             ejection_p.set(False)
     else:
         seen_objects = Vision_sessor.take_snapshot(BLUEE)
-        if seen_objects:
+        if seen_objects and valid_seen_object(seen_objects):
             if eject_object == RingType.BLUE:
                 print("Ejecting Blue")
                 ejection_p.set(True)
             else:
                 ejection_p.set(False)
-        # Add your code here to handle the blue object
 
 # Function to display joystick positions (optional)
 def display_joystick_positions():
