@@ -477,27 +477,19 @@ def check_vision_sensor():
     global eject_object
     seen_objects = Vision_sessor.take_snapshot(REDD)
     if seen_objects:
-        for obj in seen_objects:
-            object_size = obj.width * obj.height
-            if object_size >= 16:
-                print(f"Detected REDD object with size: {object_size}")
-                if eject_object == RingType.RED:
-                    print("Ejecting Red")
-                    ejection_p.set(True)
-    else:
-                    ejection_p.set(False)
+        if eject_object == RingType.RED:
+           print("Ejecting Red")
+           ejection_p.set(True)
+        else:
+            ejection_p.set(False)
     else:
         seen_objects = Vision_sessor.take_snapshot(BLUEE)
         if seen_objects:
-            for obj in Vision_sessor.objects:
-                if obj.signature == BLUEE.id:
-                    object_size = obj.width * obj.height
-                    print(f"Detected BLUEE object with size: {object_size}")
-                    if eject_object == RingType.BLUE:
-                        print("Ejecting Blue")
-                        ejection_p.set(True)
-                    else:
-                        ejection_p.set(False)
+            if eject_object == RingType.BLUE:
+                print("Ejecting Blue")
+                ejection_p.set(True)
+            else:
+                ejection_p.set(False)
         # Add your code here to handle the blue object
 
 # Function to display joystick positions (optional)
