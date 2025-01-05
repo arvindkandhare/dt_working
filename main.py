@@ -21,12 +21,12 @@ High_scoring = Motor(Ports.PORT20)
 intake_lower = Motor(Ports.PORT1)
 intake_upper = Motor(Ports.PORT13)
 mogo_p = DigitalOut(brain.three_wire_port.f)
+ejection_p = DigitalOut(brain.three_wire_port.g)
 donker = DigitalOut(brain.three_wire_port.h)
 intake_p = DigitalOut(brain.three_wire_port.d)
 rotational_sensor = Rotation(Ports.PORT19, False)
 rotational_sensor.set_position(0, DEGREES)
 
-Vision_sessor = Vision(Ports.PORT21)
 # Constants
 MSEC_PER_SEC = 1000
 
@@ -37,6 +37,54 @@ class IntakeState:
     STALLED = 2
     FIXINGSTALL = 3
 
+class RingType:
+    RED = 0
+    BLUE = 1
+
+# Define the color signatures based of the config copied below
+REDD = Signature(1, 9907, 12073, 10990, -1991, -879, -1435, 2.5, 0)
+BLUEE = Signature(2, -4415, -3205, -3810, 5461, 8989, 7225, 2.5, 0)
+'''{
+  "brightness": 50,
+  "signatures": [
+    {
+      "name": "REDD",
+      "parameters": {
+        "uMin": 9907,
+        "uMax": 12073,
+        "uMean": 10990,
+        "vMin": -1991,
+        "vMax": -879,
+        "vMean": -1435,
+        "rgb": 5973535,
+        "type": 0,
+        "name": "REDD"
+      },
+      "range": 2.5
+    },
+    {
+      "name": "BLUEE",
+      "parameters": {
+        "uMin": -4415,
+        "uMax": -3205,
+        "uMean": -3810,
+        "vMin": 5461,
+        "vMax": 8989,
+        "vMean": 7225,
+        "rgb": 1714760,
+        "type": 0,
+        "name": "BLUEE"
+      },
+      "range": 2.5
+    }
+  ],
+  "codes": []
+}'''
+Vision_sessor = Vision(Ports.PORT16, 50, REDD,BLUEE)
+# Initialize eject_counter
+eject_counter = 0
+eject_object = RingType.BLUE
+
 intake_state = IntakeState.STOPPED
 
 # Global variables
@@ -45,9 +93,10 @@ high_scoring_running = False
 current_direction = FORWARD
 high_scoring_mode = False
 # Constants
-STALL_THRESHOLD = 5       # Adjust as needed
-STALL_COUNT = 5
-RETRY_LIMIT = 30
+STALL_THRESHOLD = 0       # Adjust as needed
+STALL_COUNT = 10
+RETRY_LIMIT = 10
+EJECT_LIMIT= 20
 MSEC_PER_SEC = 1000
 # Define constants for the target angles
 HIGH_SCORE_TARGET_ANGLE_SCORE = 450
@@ -72,10 +121,10 @@ def adjust_high_scoring_motor_position():
 
 # Function to set the state of the intake motor
 def set_intake_motor_state(direction=FORWARD):
-    global intake_state, current_direction
+    global intake_state, current_direction, eject_counter
     if intake_state == IntakeState.RUNNING or intake_state == IntakeState.FIXINGSTALL:
-        intake_lower.set_velocity(95, PERCENT)
-        intake_upper.set_velocity(95, PERCENT)
+        intake_lower.set_velocity(90, PERCENT)
+        intake_upper.set_velocity(90, PERCENT)
         intake_lower.spin(direction)
         if intake_state == IntakeState.FIXINGSTALL:
             intake_upper.spin(direction)
@@ -88,9 +137,19 @@ def set_intake_motor_state(direction=FORWARD):
 
 # Stall detection and handling for the intake motor
 def stall_detection_and_handling():
-    global intake_state, consecutive_stall_count, retry_count, high_score_stall, high_score_target_angle, high_scoring_running
+    global intake_state, consecutive_stall_count, retry_count, high_score_stall, high_score_target_angle, high_scoring_running, eject_counter
     global current_direction
     if intake_state == IntakeState.RUNNING or intake_state == IntakeState.STALLED:
+        if intake_state == IntakeState.RUNNING and eject_counter > 0:
+                eject_counter = eject_counter - 1
+                print("Decremeting eject counter " + str(eject_counter))
+                if eject_counter == 0:
+                    print("stopping the motor momentarily")
+                    intake_state = IntakeState.STOPPED
+                    set_intake_motor_state(current_direction)
+                    wait(100, MSEC)
+                    #intake_state = IntakeState.RUNNING
+                    #set_intake_motor_state(current_direction)
         current_velocity = intake_upper.velocity(PERCENT)
         if abs(current_velocity) <= STALL_THRESHOLD:
             #print("Stalled" + str(consecutive_stall_count))
@@ -413,50 +472,32 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two):
 
 # driver.py 
 
-# Define the color signatures based of the config copied below
-REDD = Signature(1, 9907, 12073, 10990, -1991, -879, -1435, 2.5, 0)
-BLUEE = Signature(2, -4415, -3205, -3810, 5461, 8989, 7225, 2.5, 0)
-'''{
-  "brightness": 50,
-  "signatures": [
-    {
-      "name": "REDD",
-      "parameters": {
-        "uMin": 9907,
-        "uMax": 12073,
-        "uMean": 10990,
-        "vMin": -1991,
-        "vMax": -879,
-        "vMean": -1435,
-        "rgb": 5973535,
-        "type": 0,
-        "name": "REDD"
-      },
-      "range": 2.5
-    },
-    {
-      "name": "BLUEE",
-      "parameters": {
-        "uMin": -4415,
-        "uMax": -3205,
-        "uMean": -3810,
-        "vMin": 5461,
-        "vMax": 8989,
-        "vMean": 7225,
-        "rgb": 1714760,
-        "type": 0,
-        "name": "BLUEE"
-      },
-      "range": 2.5
-    }
-  ],
-  "codes": []
-}'''
 # Function to check the vision sensor
 def check_vision_sensor():
+    global eject_object
     seen_objects = Vision_sessor.take_snapshot(REDD)
     if seen_objects:
-        print("Blue" + str(seen_objects.count))
+        for obj in seen_objects:
+            object_size = obj.width * obj.height
+            if object_size >= 16:
+                print(f"Detected REDD object with size: {object_size}")
+                if eject_object == RingType.RED:
+                    print("Ejecting Red")
+                    ejection_p.set(True)
+    else:
+                    ejection_p.set(False)
+    else:
+        seen_objects = Vision_sessor.take_snapshot(BLUEE)
+        if seen_objects:
+            for obj in Vision_sessor.objects:
+                if obj.signature == BLUEE.id:
+                    object_size = obj.width * obj.height
+                    print(f"Detected BLUEE object with size: {object_size}")
+                    if eject_object == RingType.BLUE:
+                        print("Ejecting Blue")
+                        ejection_p.set(True)
+                    else:
+                        ejection_p.set(False)
         # Add your code here to handle the blue object
 
 # Function to display joystick positions (optional)
@@ -648,6 +689,7 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     #autonomous()
+    ejection_p.set(False)
     drivercontrol()
     #intake_p.set(True)
     #drive
