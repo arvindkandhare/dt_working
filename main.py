@@ -41,6 +41,7 @@ class RingType:
     RED = 0
     BLUE = 1
 
+MIN_REJECT_SIZE=2000
 # Define the color signatures based of the config copied below
 REDD = Signature(1, 9907, 12073, 10990, -1991, -879, -1435, 2.5, 0)
 BLUEE = Signature(2, -4415, -3205, -3810, 5461, 8989, 7225, 2.5, 0)
@@ -478,7 +479,7 @@ def valid_seen_object(seen_objects):
         for obj in seen_objects:
             object_size = obj.width * obj.height
             #print("Detected object with size: " + str(object_size))
-            if object_size > 1000:
+            if object_size > MIN_REJECT_SIZE:
                 return True
     return False
 
