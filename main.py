@@ -747,12 +747,13 @@ def handle_digital_outputs():
 
 # Autonomous function
 def autonomous():
+    global eject_object, gyro
     # Autonomous code
     # For example, move forward for a certain distance
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 1
+    slot_no = 3
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
@@ -803,7 +804,7 @@ def autonomous_empty():
     right_drive_smart.stop()
 
 def autonomous_test():
-    global lookahead, tolerance, increasing_x, test_square, intake_state, high_score_target_angle, test_circle, gyro
+    global lookahead, tolerance, increasing_x, test_square, intake_state, high_score_target_angle, test_circle, gyro, eject_object
     #walk_path(increasing_x, lookahead, tolerance, 1)
     #mogo_p.set(True)
     #wait(1, SECONDS)
