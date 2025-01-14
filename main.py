@@ -298,8 +298,8 @@ current_x = -1
 current_y =  -1
 previous_right_encoder = 0
 previous_left_encoder = 0
-forward_velocity = 30
-turn_velocity_k = 30
+forward_velocity = 40
+turn_velocity_k = 40
 left_velocity = 5
 right_velocity = 5
 #forward_velocity/100
@@ -317,7 +317,7 @@ def rightEncoder():
  
 def update_position():
     global current_x, current_y, current_angle, previous_left_encoder, previous_right_encoder
-   
+
     # Calculate the distance traveled by each wheel
     left_encoder = ((leftEncoder() / 360) * wheel_circumference * gear_ratio) * feet_to_unit
     right_encoder = ((rightEncoder() / 360) * wheel_circumference * gear_ratio) * feet_to_unit
@@ -753,7 +753,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 3
+    slot_no = 5
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
@@ -899,7 +899,3 @@ def main():
     #intake_p.set(True)
     #drive
     #unscoring()
-
-# Check if the script is run directly
-if __name__ == "__main__":
-    main()
