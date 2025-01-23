@@ -18,13 +18,13 @@ right_motor_c = Motor(Ports.PORT17, GearSetting.RATIO_6_1, False)
 left_drive_smart = MotorGroup(left_motor_a, left_motor_b, left_motor_c)
 right_drive_smart = MotorGroup(right_motor_a, right_motor_b, right_motor_c)
 High_scoring = Motor(Ports.PORT20)
-intake_lower = Motor(Ports.PORT1)
+intake_lower = Motor(Ports.PORT21)
 intake_upper = Motor(Ports.PORT13)
 mogo_p = DigitalOut(brain.three_wire_port.f)
 ejection_p = DigitalOut(brain.three_wire_port.g)
 donker = DigitalOut(brain.three_wire_port.h)
 intake_p = DigitalOut(brain.three_wire_port.d)
-rotational_sensor = Rotation(Ports.PORT19, False)
+rotational_sensor = Rotation(Ports.PORT18, True)
 rotational_sensor.set_position(0, DEGREES)
 
 # Constants
@@ -101,25 +101,41 @@ RETRY_LIMIT = 10
 EJECT_LIMIT= 20
 MSEC_PER_SEC = 1000
 # Define constants for the target angles
-HIGH_SCORE_TARGET_ANGLE_SCORE = 360
-HIGH_SCORE_TARGET_ANGLE_WAIT = 150
-HIGH_SCORE_TARGET_ANGLE_CAPTURE = 45
+HIGH_SCORE_TARGET_ANGLE_SCORE = -430
+HIGH_SCORE_TARGET_ANGLE_WAIT = -200
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = -67
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
+MAX_CAPTURE_POSITION_COUNT = 50
 # Global variables
 retry_count = 0
 consecutive_stall_count = 0
 high_scoring_running = False
 high_score_stall = False  # Set this accordingly in your main code if needed
 high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_DOWN
+capture_position_counter = 0
+
+def set_high_score_angle(angle):
+    global high_score_target_angle, capture_position_counter
+    if (angle == HIGH_SCORE_TARGET_ANGLE_CAPTURE):
+        capture_position_counter = MAX_CAPTURE_POSITION_COUNT
+
+    high_score_target_angle = angle
 
 # Function to set the state of the high scoring motor
 def adjust_high_scoring_motor_position():
-    global high_score_target_angle
+    global high_score_target_angle, capture_position_counter
 
+    #print(" Rotating angle is " + str(rotational_sensor.position(DEGREES)) + "high score motor angle is " + str(High_scoring.position(DEGREES)))
     High_scoring.set_stopping(BRAKE)
     High_scoring.set_velocity(100, PERCENT)
+    if high_score_target_angle == HIGH_SCORE_TARGET_ANGLE_CAPTURE and abs(High_scoring.position(DEGREES) - rotational_sensor.position(DEGREES)) > 2:
+        if capture_position_counter > 0:
+            capture_position_counter -= 1
+        else:
+            print("Chaning motor position")
+            print(" Rotating angle is " + str(rotational_sensor.position(DEGREES)) + "high score motor angle is " + str(High_scoring.position(DEGREES)))
+            High_scoring.set_position(rotational_sensor.position(DEGREES), DEGREES)
     High_scoring.spin_to_position(high_score_target_angle, DEGREES, 30, PERCENT, False)
-
 
 # Function to set the state of the intake motor
 def set_intake_motor_state(direction=FORWARD):
@@ -166,7 +182,7 @@ def stall_detection_and_handling():
             set_intake_motor_state(current_direction)
             if high_scoring_running:
                 high_score_stall = True
-                high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+                set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
                 adjust_high_scoring_motor_position()
                 high_scoring_running = False
             consecutive_stall_count = 0
@@ -514,7 +530,7 @@ def autonomous_blue_left():
     autonomous_extra_mogo_side(p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft)
 
 def autonomous_extra_mogo_side(p1, p2, p3, p4, p7):
-    global intake_state, lookahead, tolerance, high_score_target_angle
+    global intake_state, lookahead, tolerance
     #confirm about tolerance and direction    
     lookahead = 50
     print("autonomous_red_right: before p1")  
@@ -523,7 +539,7 @@ def autonomous_extra_mogo_side(p1, p2, p3, p4, p7):
     walk_path(p2, lookahead, tolerance, -1)
     print("autonomous_red_right: before p2")
     mogo_p.set(True)
-    high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
     adjust_high_scoring_motor_position()
     wait(10, MSEC)
     intake_state = IntakeState.RUNNING
@@ -537,7 +553,7 @@ def autonomous_extra_mogo_side(p1, p2, p3, p4, p7):
     walk_path(p4, lookahead, tolerance, 1)
     print("autonomous_red_right: before p4")
     mogo_p.set(False)
-    high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_DOWN
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_DOWN)
     adjust_high_scoring_motor_position()
 
     walk_path(p7, lookahead, tolerance, 1)
@@ -564,7 +580,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two, to_tower):
     intake_p.set(True)
 
     # Bring up high scoring motor
-    high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
     adjust_high_scoring_motor_position()
 
     lookahead = 50
@@ -589,7 +605,7 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two, to_tower):
     lookahead = 20
     walk_path(last_two, lookahead, tolerance, 1)
     # Bring up high scoring motor
-    high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_DOWN
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_DOWN)
     adjust_high_scoring_motor_position()
     intake_state = IntakeState.STOPPED
     set_intake_motor_state()
@@ -679,25 +695,25 @@ def set_drive_motor_velocities():
 def toggle_high_scoring_motor():
     global high_scoring_running, high_score_target_angle
     if controller_1.buttonLeft.pressing():
-        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_SCORE
+        set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_SCORE)
         high_scoring_running = False
         while controller_1.buttonLeft.pressing():
             wait(10, MSEC)
 
     if controller_1.buttonUp.pressing():
-        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+        set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
         high_scoring_running = False
         while controller_1.buttonLeft.pressing():
             wait(10, MSEC)
 
     if controller_1.buttonRight.pressing():
-        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_CAPTURE
+        set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_CAPTURE)
         high_scoring_running = True
         while controller_1.buttonLeft.pressing():
             wait(10, MSEC)
 
     if controller_1.buttonDown.pressing():
-        high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_DOWN
+        set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_DOWN)
         high_scoring_running = False
         while controller_1.buttonDown.pressing():
             wait(10, MSEC)
@@ -819,7 +835,7 @@ def autonomous_test():
 
     #walk_path(reversed_test_circle, lookahead, tolerance, 1)
     lookahead = 50
-    high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
     adjust_high_scoring_motor_position()
     intake_state = IntakeState.RUNNING
     wait(100, MSEC)
@@ -885,7 +901,7 @@ def unscoring():
     print("Hi")
 
 # Create a Competition object
-competition = Competition(drivercontrol, autonomous)
+#competition = Competition(drivercontrol, autonomous)
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
@@ -894,8 +910,9 @@ def main():
     #intake_p.set(True)
     #autonomous()
     ejection_p.set(False)
-    #drivercontrol()
-    autonomous()
+    drivercontrol()
+    #autonomous()
     #intake_p.set(True)
     #drive
     #unscoring()
+main()
