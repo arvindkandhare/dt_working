@@ -103,7 +103,7 @@ MSEC_PER_SEC = 1000
 # Define constants for the target angles
 HIGH_SCORE_TARGET_ANGLE_SCORE = -430
 HIGH_SCORE_TARGET_ANGLE_WAIT = -200
-HIGH_SCORE_TARGET_ANGLE_CAPTURE = -67
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = -70
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
 MAX_CAPTURE_POSITION_COUNT = 50
 # Global variables
@@ -117,9 +117,12 @@ capture_position_counter = 0
 def set_high_score_angle(angle):
     global high_score_target_angle, capture_position_counter
     if (angle == HIGH_SCORE_TARGET_ANGLE_CAPTURE):
+        high_score_target_angle = angle
         capture_position_counter = MAX_CAPTURE_POSITION_COUNT
-
-    high_score_target_angle = angle
+    elif (angle == HIGH_SCORE_TARGET_ANGLE_SCORE) and high_score_target_angle <= angle:
+        high_score_target_angle -= 10
+    else:
+        high_score_target_angle = angle
 
 # Function to set the state of the high scoring motor
 def adjust_high_scoring_motor_position():
