@@ -90,7 +90,7 @@ eject_object = RingType.BLUE
 intake_state = IntakeState.STOPPED
 
 # Global variables
-reverse_drive = False
+slow_drive = False
 high_scoring_running = False
 current_direction = FORWARD
 high_scoring_mode = False
@@ -103,7 +103,7 @@ MSEC_PER_SEC = 1000
 # Define constants for the target angles
 HIGH_SCORE_TARGET_ANGLE_SCORE = -430
 HIGH_SCORE_TARGET_ANGLE_WAIT = -200
-HIGH_SCORE_TARGET_ANGLE_CAPTURE = -65
+HIGH_SCORE_TARGET_ANGLE_CAPTURE = -60
 HIGH_SCORE_TARGET_ANGLE_DOWN = 0
 MAX_CAPTURE_POSITION_COUNT = 51
 # Global variables
@@ -658,24 +658,22 @@ def scale_joystick_input(input_value):
     # Apply cubic scaling
     scaled_input = normalized_input ** 3
     # Scale back to the range [-100, 100]
-    return scaled_input * 100
+    if slow_drive:
+        return scaled_input * 25
+    else:
+        return scaled_input * 100
 
 # Function to set drive motor velocities based on controller input
 def set_drive_motor_velocities():
-    global reverse_drive
+    global slow_drive
     if controller_1.buttonA.pressing():
-        reverse_drive = not reverse_drive
+        slow_drive = not slow_drive
         while controller_1.buttonA.pressing():
             wait(10, MSEC)
 
-    if reverse_drive:
-        # Reverse joystick inputs
-        left_joystick_y = -controller_1.axis2.position()
-        right_joystick_y = -controller_1.axis3.position()
-    else:
-        # Normal control
-        left_joystick_y = controller_1.axis3.position()
-        right_joystick_y = controller_1.axis2.position()
+    # Normal control
+    left_joystick_y = controller_1.axis3.position()
+    right_joystick_y = controller_1.axis2.position()
 
     # Apply scaling to joystick inputs
     left_joystick_y = scale_joystick_input(left_joystick_y)
