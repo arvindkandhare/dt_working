@@ -933,7 +933,7 @@ def autonomous_empty():
     right_drive_smart.stop()
 
 def autonomous_test():
-    global lookahead, tolerance, increasing_x, test_square, intake_state, high_score_target_angle, test_circle, gyro, eject_object
+    global lookahead, tolerance, increasing_x, test_square, intake_state, high_score_target_angle, test_circle, gyro, eject_object, forward_velocity
     #walk_path(increasing_x, lookahead, tolerance, 1)
     #mogo_p.set(True)
     #wait(1, SECONDS)
@@ -982,7 +982,7 @@ def autonomous_test():
         wait(300, MSEC)
         intake_state = IntakeState.RUNNING
         set_intake_motor_state(REVERSE)
-        walk_path(wallStakeTestp2part2, lookahead, tolerance, 1)
+        #walk_path(wallStakeTestp2part2, lookahead, tolerance, 1)
         wait(200, MSEC)
         forward_velocity = 10
         turn_velocity_k = 10
@@ -1031,7 +1031,7 @@ def autonomous_test():
         wait(300, MSEC)
         intake_state = IntakeState.RUNNING
         set_intake_motor_state(REVERSE)
-        walk_path(rightwallStakeTestp2part2, lookahead, tolerance, 1)
+        #walk_path(rightwallStakeTestp2part2, lookahead, tolerance, 1)
         wait(200, MSEC)
         forward_velocity = 10
         turn_velocity_k = 10
@@ -1085,7 +1085,7 @@ def unscoring():
     print("Hi")
 
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous)
+competition = Competition(drivercontrol, autonomous)
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
@@ -1095,9 +1095,9 @@ def main():
     #autonomous()
     ejection_p.set(False)
     #autonomous_test()
-    drivercontrol()
+    #drivercontrol()
     #autonomous()
     #intake_p.set(True)
     #drive
     #unscoring()
-main()
+#main()
