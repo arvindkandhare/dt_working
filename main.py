@@ -88,7 +88,8 @@ BLUEE = Signature(2, -4415, -3205, -3810, 5461, 8989, 7225, 2.5, 0)
   ],
   "codes": []
 }'''
-Vision_sessor = Vision(Ports.PORT16, 50, REDD,BLUEE)
+Color_sensor = Optical(Ports.PORT15)
+Color_sensor.set_light_power(100)
 # Initialize eject_counter
 eject_counter = 0
 eject_object = RingType.BLUE
@@ -741,17 +742,15 @@ def valid_seen_object(seen_objects):
 # Function to check the vision sensor
 def check_vision_sensor():
     global eject_object
-    seen_objects = Vision_sessor.take_snapshot(REDD)
-    if seen_objects and valid_seen_object(seen_objects):
-        if eject_object == RingType.RED:
+    if eject_object == RingType.RED:
+        if Color_sensor.color() == Color.RED:
            print("Ejecting Red")
            ejection_p.set(True)
         else:
             ejection_p.set(False)
     else:
-        seen_objects = Vision_sessor.take_snapshot(BLUEE)
-        if seen_objects and valid_seen_object(seen_objects):
-            if eject_object == RingType.BLUE:
+       if eject_object == RingType.BLUE:
+            if Color_sensor.color() == Color.BLUE:
                 print("Ejecting Blue")
                 ejection_p.set(True)
             else:
@@ -899,7 +898,7 @@ def autonomous():
         eject_object = RingType.RED
         autonomous_blue_right()
     elif slot_no == 5:
-        eject_object = RingType.NONE
+        eject_object = RingType.BLUE
         autonomous_test()
 
         left_drive_smart.spin_to_position(((38/(2.75*(math.pi)))*360), DEGREES, 100, PERCENT)
@@ -1095,7 +1094,8 @@ def main():
     #intake_p.set(True)
     #autonomous()
     ejection_p.set(False)
-    autonomous_test()
+    #autonomous_test()
+    drivercontrol()
     #autonomous()
     #intake_p.set(True)
     #drive
