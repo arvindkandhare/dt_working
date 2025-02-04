@@ -21,7 +21,8 @@ High_scoring = Motor(Ports.PORT20)
 intake_lower = Motor(Ports.PORT21)
 intake_upper = Motor(Ports.PORT13)
 mogo_p = DigitalOut(brain.three_wire_port.f)
-ejection_p = DigitalOut(brain.three_wire_port.g)
+ejection_p = DigitalOut(brain.three_wire_port.a)
+ejection_p.set(False)
 donker = DigitalOut(brain.three_wire_port.h)
 intake_p = DigitalOut(brain.three_wire_port.d)
 rotational_sensor = Rotation(Ports.PORT19, True)
@@ -739,22 +740,24 @@ def valid_seen_object(seen_objects):
                 return True
     return False
 
+BRIGHTNESS_THRESHOLD = 50
 # Function to check the vision sensor
 def check_vision_sensor():
     global eject_object
-    if eject_object == RingType.RED:
-        if Color_sensor.color() == Color.RED:
-           print("Ejecting Red")
-           ejection_p.set(True)
-        else:
-            ejection_p.set(False)
-    else:
-       if eject_object == RingType.BLUE:
-            if Color_sensor.color() == Color.BLUE:
-                print("Ejecting Blue")
-                ejection_p.set(True)
+    if Color_sensor.brightness() > BRIGHTNESS_THRESHOLD:
+        if eject_object == RingType.RED:
+            if Color_sensor.color() == Color.RED:
+               print("Ejecting Red")
+               ejection_p.set(True)
             else:
                 ejection_p.set(False)
+        else:
+            if eject_object == RingType.BLUE:
+                if Color_sensor.color() == Color.BLUE:
+                    print("Ejecting Blue")
+                    ejection_p.set(True)
+                else:
+                    ejection_p.set(False)
 
 # Function to display joystick positions (optional)
 def display_joystick_positions():
@@ -948,7 +951,7 @@ def autonomous_test():
 
     #walk_path(reversed_test_circle, lookahead, tolerance, 1)
     lookahead = 50
-    wall_score_on = True
+    wall_score_on = False
     set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
     adjust_high_scoring_motor_position()
     intake_state = IntakeState.RUNNING
@@ -1093,7 +1096,6 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     #autonomous()
-    ejection_p.set(False)
     #autonomous_test()
     #drivercontrol()
     #autonomous()
