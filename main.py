@@ -558,7 +558,7 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
         adjust_high_scoring_motor_position()
         check_vision_sensor()
         stall_detection_and_handling()
-        if len(points_list) == 1 or robot_not_walking > MAX_WAIT_FOR_NO_WALK:
+        if len(points_list) == 0 or robot_not_walking > MAX_WAIT_FOR_NO_WALK:
             running = False
             robot_not_walking = 0
             break
@@ -579,7 +579,7 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
             points_list.pop(0)  # Remove the reached point
 
         # Check if the robot has reached the last point
-        if len(points_list) == 0:
+        if len(points_list) == 1:
             final_distance = math.sqrt((points_list[-1][0] - current_x) ** 2 + (points_list[-1][1] - current_y) ** 2)
             if final_distance < stop_threshold:
                 running = False
@@ -871,7 +871,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 5
+    slot_no = 1
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
