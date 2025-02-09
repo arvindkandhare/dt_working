@@ -243,7 +243,7 @@ wait(30, MSEC)
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-146.975, 127.301), (-142.079, 126.393), (-137.475, 124.457), (-133.118, 122.009), (-128.948, 119.253), (-124.916, 116.296), (-121.0, 113.188), (-117.168, 109.976), (-113.407, 106.682), (-109.703, 103.323), (-106.048, 99.911), (-102.43, 96.461), (-98.847, 92.974), (-95.288, 89.461), (-91.75, 85.929), (-88.228, 82.379), (-84.715, 78.821), (-81.208, 75.258), (-77.699, 71.695), (-74.183, 68.141), (-70.649, 64.603), (-67.087, 61.094), (-62.038, 56.275), (-62.038, 56.275)]
 red_left_tofirststack = [(-66.948, 66.505), (-64.771, 81.588), (-63.049, 96.73), (-60.55, 111.758), (-59.156, 118.226), (-59.156, 118.226)]
-red_left_totower =[(-56.005, 109.686), (-52.313, 100.394), (-48.934, 90.983), (-45.666, 81.532), (-42.474, 72.055), (-39.348, 62.556), (-36.285, 53.037), (-33.294, 43.494), (-30.399, 33.923), (-28.954, 28.954), (-28.954, 28.954)]
+red_left_totower = [(-56.005, 109.686), (-55.184, 107.862), (-54.405, 106.02), (-53.654, 104.166), (-52.925, 102.304), (-52.214, 100.434), (-51.518, 98.56), (-50.834, 96.68), (-50.16, 94.797), (-49.496, 92.911), (-48.841, 91.021), (-48.194, 89.129), (-47.553, 87.234), (-46.92, 85.337), (-46.293, 83.438), (-45.672, 81.537), (-45.056, 79.634), (-44.446, 77.729), (-43.841, 75.823), (-43.241, 73.915), (-42.647, 72.005), (-42.056, 70.094), (-41.471, 68.182), (-40.89, 66.268), (-40.313, 64.353), (-39.741, 62.437), (-39.174, 60.519), (-38.61, 58.6), (-38.051, 56.68), (-37.496, 54.758), (-36.915, 52.728), (-36.915, 52.728)]
 red_left_lasttwo = [(-48.378, 156.517), (-46.712, 155.41), (-45.102, 154.225), (-43.546, 152.968), (-42.048, 151.643), (-40.605, 150.258), (-39.218, 148.818), (-37.888, 147.324), (-36.613, 145.783), (-35.396, 144.196), (-34.235, 142.568), (-33.131, 140.901), (-32.085, 139.196), (-31.096, 137.458), (-30.168, 135.687), (-29.298, 133.886), (-28.488, 132.057), (-27.742, 130.202), (-27.057, 128.323), (-26.436, 126.422), (-25.882, 124.5), (-25.394, 122.561), (-24.973, 120.606), (-24.622, 118.637), (-24.343, 116.656), (-24.136, 114.667), (-24.002, 112.672), (-23.943, 110.673), (-23.962, 108.673), (-24.057, 106.676), (-24.229, 104.683), (-24.479, 102.699), (-24.811, 100.727), (-25.221, 98.769), (-25.709, 96.83), (-26.274, 94.912), (-26.917, 93.018), (-27.635, 91.152), (-28.427, 89.316), (-29.292, 87.512), (-30.227, 85.744), (-31.23, 84.014), (-32.298, 82.323), (-33.428, 80.673), (-34.149, 79.681), (-34.149, 79.681)]
 first_red_left_4 = [(-38.418, 106.242), (-38.36, 108.241), (-38.374, 110.24), (-38.484, 112.237), (-38.681, 114.227), (-38.989, 116.203), (-39.405, 118.159), (-39.935, 120.087), (-40.587, 121.977), (-41.369, 123.818), (-42.276, 125.6), (-43.306, 127.313), (-44.454, 128.949), (-45.715, 130.501), (-47.078, 131.964), (-48.533, 133.336), (-50.071, 134.614), (-51.681, 135.8), (-53.351, 136.9), (-55.072, 137.919), (-56.836, 138.861), (-58.639, 139.726), (-60.472, 140.524), (-62.331, 141.264), (-64.213, 141.94), (-66.112, 142.567), (-68.027, 143.143), (-69.955, 143.676), (-71.894, 144.166), (-73.841, 144.62), (-75.798, 145.036), (-77.76, 145.423), (-79.728, 145.778), (-81.701, 146.107), (-83.677, 146.412), (-85.658, 146.691), (-87.641, 146.95), (-89.626, 147.19), (-91.614, 147.412), (-93.604, 147.616), (-95.595, 147.806), (-97.587, 147.981), (-99.58, 148.144), (-101.575, 148.294), (-103.57, 148.433), (-105.566, 148.562), (-107.562, 148.683), (-109.559, 148.795), (-111.556, 148.9), (-113.554, 148.998), (-115.551, 149.089), (-117.55, 149.176), (-119.548, 149.258), (-121.546, 149.336), (-123.545, 149.41), (-125.544, 149.481), (-127.543, 149.551), (-129.541, 149.618), (-131.54, 149.684), (-133.539, 149.749), (-135.538, 149.814), (-137.537, 149.879), (-139.536, 149.945), (-141.535, 150.012), (-143.534, 150.08), (-145.533, 150.151), (-147.531, 150.223), (-149.53, 150.299), (-151.528, 150.378), (-153.526, 150.461), (-155.525, 150.548), (-157.522, 150.64), (-161.26, 150.825), (-161.26, 150.825)]
 red_left_back_4 = [(-163.631, 152.248), (-161.632, 152.291), (-159.632, 152.332), (-157.632, 152.373), (-155.633, 152.413), (-153.633, 152.451), (-151.634, 152.488), (-149.634, 152.523), (-147.634, 152.557), (-145.634, 152.588), (-143.635, 152.616), (-141.635, 152.641), (-139.635, 152.662), (-137.635, 152.677), (-135.635, 152.687), (-133.635, 152.69), (-131.635, 152.685), (-129.635, 152.673), (-127.635, 152.655), (-125.635, 152.636), (-123.635, 152.617), (-121.635, 152.602), (-119.635, 152.59), (-117.635, 152.584), (-115.635, 152.581), (-113.635, 152.581), (-111.635, 152.585), (-109.635, 152.592), (-107.635, 152.601), (-105.635, 152.613), (-103.635, 152.626), (-101.635, 152.641), (-99.636, 152.658), (-97.636, 152.676), (-95.636, 152.695), (-92.961, 152.722), (-92.961, 152.722)]
@@ -254,6 +254,20 @@ blue_right_totower = [(abs(x), y) for x, y in red_left_totower]
 blue_right_lasttwo = [(abs(x), y) for x, y in red_left_lasttwo]
 first_blue_right_4 =[(abs(x), y) for x, y in first_red_left_4]
 blue_right_back_4 = [(abs(x), y) for x, y in red_left_back_4]
+
+blue_left_tomogo = [(abs(x), -y) for x, y in red_left_tomogo]
+blue_left_tofirststack = [(abs(x), -y) for x, y in red_left_tofirststack]
+blue_left_totower = [(abs(x), -y) for x, y in red_left_totower]
+blue_left_lasttwo = [(abs(x), -y) for x, y in red_left_lasttwo]
+first_blue_left_4 =[(abs(x), -y) for x, y in first_red_left_4]
+blue_left_back_4 = [(abs(x), -y) for x, y in red_left_back_4]
+
+red_right_tomogo = [((x), -y) for x, y in red_left_tomogo]
+red_right_tofirststack = [((x), -y) for x, y in red_left_tofirststack]
+red_right_totower = [((x), -y) for x, y in red_left_totower]
+red_right_lasttwo = [((x), -y) for x, y in red_left_lasttwo]
+first_red_right_4 =[((x), -y) for x, y in first_red_left_4]
+red_right_back_4 = [((x), -y) for x, y in red_left_back_4]
 
 
 # Testing paths
@@ -613,11 +627,13 @@ def autonomous_red_left():
 
 def autonomous_red_right():
     global p1redright, p2redright, p3redright, p4redright, p7redright
-    autonomous_extra_mogo_side(p1redright, p2redright, p3redright, p4redright, p7redright)
+    autonomous_more_donuts_side(red_right_tomogo, red_right_tofirststack, red_right_lasttwo, first_red_right_4, red_right_back_4, red_right_totower)
+    #autonomous_extra_mogo_side(p1redright, p2redright, p3redright, p4redright, p7redright)
 
 def autonomous_blue_left():
     global p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft
-    autonomous_extra_mogo_side(p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft)
+    autonomous_more_donuts_side(blue_left_tomogo, blue_left_tofirststack, blue_left_lasttwo, first_blue_left_4, blue_left_back_4, blue_left_totower)
+    #autonomous_extra_mogo_side(p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft)
 
 def autonomous_extra_mogo_side(p1, p2, p3, p4, p7):
     global intake_state, lookahead, tolerance
@@ -697,8 +713,6 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two, first_4, back_4,
     walk_path(first_4, lookahead, tolerance, 1)
     print("autonomous_more_donuts_side: before to_tower")
     back_reverse = back_4[::-1]
-    forward_velocity = 70
-    turn_velocity_k = 70
     print("autonomous_more_donuts_side: going back1")
     walk_path(back_4, lookahead, tolerance, -1)
     walk_path(back_reverse, lookahead, tolerance, 1)
@@ -706,8 +720,6 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two, first_4, back_4,
     walk_path(back_4, lookahead, tolerance, -1)
     walk_path(back_reverse, lookahead, tolerance, 1)
     walk_path(back_4, lookahead, tolerance, -1)
-    forward_velocity = 40
-    turn_velocity_k = 40
     # Bring up high scoring motor
     set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_DOWN)
     adjust_high_scoring_motor_position()
@@ -871,17 +883,17 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 1
+    slot_no = 4
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
         autonomous_red_left()
     elif slot_no == 2:
+        gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
         autonomous_red_right()
     elif slot_no == 3:
-        gyro.set_heading(180, DEGREES)
-        eject_object = RingType.RED
+        eject_object = RingType.NONE
         autonomous_blue_left()
     elif slot_no == 4:
         eject_object = RingType.RED
@@ -903,7 +915,7 @@ def drivercontrol():
         toggle_high_scoring_motor()
         adjust_high_scoring_motor_position()
         toggle_intake_motor()
-        check_vision_sensor()
+        #check_vision_sensor()
         handle_digital_outputs()
         stall_detection_and_handling()
 
