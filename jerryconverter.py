@@ -1,38 +1,47 @@
 # Input data as a multiline string
 data = """#PATH-POINTS-START Path
--56.005,109.686,120,0
--55.184,107.862,120
--54.405,106.02,120
--53.654,104.166,120
--52.925,102.304,120
--52.214,100.434,120
--51.518,98.56,120
--50.834,96.68,120
--50.16,94.797,120
--49.496,92.911,120
--48.841,91.021,120
--48.194,89.129,120
--47.553,87.234,120
--46.92,85.337,120
--46.293,83.438,120
--45.672,81.537,120
--45.056,79.634,120
--44.446,77.729,120
--43.841,75.823,120
--43.241,73.915,120
--42.647,72.005,120
--42.056,70.094,120
--41.471,68.182,120
--40.89,66.268,120
--40.313,64.353,120
--39.741,62.437,120
--39.174,60.519,120
--38.61,58.6,120
--38.051,56.68,120
--37.496,54.758,120
--36.915,52.728,120,0
--36.915,52.728,0,0
-#PATH.JERRYIO-DATA {"appVersion":"0.8.3","format":"path.jerryio v0.1","gc":{"robotWidth":30,"robotHeight":30,"robotIsHolonomic":false,"showRobot":true,"uol":1,"pointDensity":2,"controlMagnetDistance":5,"fieldImage":{"displayName":"V5RC 2025 - High Stakes","signature":"V5RC 2025 - High Stakes","origin":{"__type":"built-in"}},"coordinateSystem":"VEX Gaming Positioning System"},"paths":[{"segments":[{"controls":[{"uid":"YAiQ8x1RS8","x":-56.00515463917526,"y":109.68556701030927,"lock":false,"visible":true,"heading":0,"__type":"end-point"},{"uid":"1Dzybna6j0","x":-51.77835051546392,"y":100.668385417191,"lock":false,"visible":true,"__type":"control"},{"uid":"n1dGuczOwY","x":-44.10090048215636,"y":77.9479081230927,"lock":false,"visible":true,"__type":"control"},{"uid":"zJR0uk1jrr","x":-36.91533347184709,"y":52.72797631414919,"lock":false,"visible":true,"heading":0,"__type":"end-point"}],"speedProfiles":[],"lookaheadKeyframes":[],"uid":"uIberXHs69"}],"pc":{"speedLimit":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":600,"label":"600"},"step":1,"from":40,"to":120},"bentRateApplicableRange":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":1,"label":"1"},"step":0.001,"from":0,"to":0.1}},"name":"Path","uid":"HWeeaR6MZT","lock":false,"visible":true}]}"""
+-171.42,159.243,120,0
+-169.42,159.268,120
+-167.42,159.293,120
+-165.42,159.318,120
+-163.42,159.342,120
+-161.42,159.365,120
+-159.42,159.387,120
+-157.42,159.408,120
+-155.421,159.428,120
+-153.421,159.446,120
+-151.421,159.463,120
+-149.421,159.479,120
+-147.421,159.492,120
+-145.421,159.503,120
+-143.421,159.511,120
+-141.421,159.516,120
+-139.421,159.516,120
+-137.421,159.513,120
+-135.421,159.505,120
+-133.421,159.493,120
+-131.421,159.476,120
+-129.421,159.455,120
+-127.421,159.433,120
+-125.421,159.41,120
+-123.422,159.387,120
+-121.422,159.366,120
+-119.422,159.346,120
+-117.422,159.329,120
+-115.422,159.313,120
+-113.422,159.299,120
+-111.422,159.287,120
+-109.422,159.277,120
+-107.422,159.269,120
+-105.422,159.261,120
+-103.422,159.256,120
+-101.422,159.251,120
+-99.422,159.247,120
+-97.422,159.245,120
+-95.422,159.243,120
+-92.961,159.243,120,0
+-92.961,159.243,0,0
+#PATH.JERRYIO-DATA {"appVersion":"0.8.3","format":"path.jerryio v0.1","gc":{"robotWidth":18,"robotHeight":18,"robotIsHolonomic":false,"showRobot":true,"uol":2.54,"pointDensity":0.7874015748031495,"controlMagnetDistance":1.968503937007874,"fieldImage":{"displayName":"V5RC 2025 - High Stakes","signature":"V5RC 2025 - High Stakes","origin":{"__type":"built-in"}},"coordinateSystem":"VEX Gaming Positioning System"},"paths":[{"segments":[{"controls":[{"uid":"S4RBHOXvDi","x":-67.488,"y":62.694,"lock":false,"visible":true,"heading":0,"__type":"end-point"},{"uid":"q2CbNQSFHu","x":-48.74857045206578,"y":62.9365872254282,"lock":false,"visible":true,"__type":"control"},{"uid":"sBLIaqB4pa","x":-54.32676508090912,"y":62.69405702417414,"lock":false,"visible":true,"__type":"control"},{"uid":"o4NjkXRcwz","x":-36.599,"y":62.694,"lock":false,"visible":true,"heading":0,"__type":"end-point"}],"speedProfiles":[],"lookaheadKeyframes":[],"uid":"kzJOyvZM1j"}],"pc":{"speedLimit":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":600,"label":"600"},"step":1,"from":40,"to":120},"bentRateApplicableRange":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":1,"label":"1"},"step":0.001,"from":0,"to":0.1}},"name":"Path","uid":"u6QrL3Tg8M","lock":false,"visible":true}]}"""
 # Split data into lines and process each line
 coordinates = []
 for line in data.strip().splitlines():
