@@ -243,12 +243,10 @@ wait(30, MSEC)
 #Paths
 red_left_tomogo = [(-151.774, 126.162), (-146.975, 127.301), (-142.079, 126.393), (-137.475, 124.457), (-133.118, 122.009), (-128.948, 119.253), (-124.916, 116.296), (-121.0, 113.188), (-117.168, 109.976), (-113.407, 106.682), (-109.703, 103.323), (-106.048, 99.911), (-102.43, 96.461), (-98.847, 92.974), (-95.288, 89.461), (-91.75, 85.929), (-88.228, 82.379), (-84.715, 78.821), (-81.208, 75.258), (-77.699, 71.695), (-74.183, 68.141), (-70.649, 64.603), (-67.087, 61.094), (-62.038, 56.275), (-62.038, 56.275)]
 red_left_tofirststack = [(-66.948, 66.505), (-64.771, 81.588), (-63.049, 96.73), (-60.55, 111.758), (-59.156, 118.226), (-59.156, 118.226)]
-
 red_left_totower = [(-56.005, 109.686), (-55.187, 107.861), (-54.426, 106.011), (-53.718, 104.141), (-53.062, 102.251), (-52.459, 100.345), (-51.91, 98.421), (-51.418, 96.483), (-50.985, 94.531), (-50.614, 92.565), (-50.31, 90.589), (-50.077, 88.602), (-49.92, 86.609), (-49.844, 84.61), (-49.855, 82.611), (-49.96, 80.614), (-50.165, 78.624), (-50.476, 76.649), (-50.898, 74.694), (-51.438, 72.769), (-52.099, 70.882), (-52.883, 69.042), (-53.793, 67.261), (-54.822, 65.547), (-55.972, 63.912), (-56.915, 62.728), (-56.915, 62.728)]
-
 red_left_lasttwo = [(-48.378, 156.517), (-46.712, 155.41), (-45.102, 154.225), (-43.546, 152.968), (-42.048, 151.643), (-40.605, 150.258), (-39.218, 148.818), (-37.888, 147.324), (-36.613, 145.783), (-35.396, 144.196), (-34.235, 142.568), (-33.131, 140.901), (-32.085, 139.196), (-31.096, 137.458), (-30.168, 135.687), (-29.298, 133.886), (-28.488, 132.057), (-27.742, 130.202), (-27.057, 128.323), (-26.436, 126.422), (-25.882, 124.5), (-25.394, 122.561), (-24.973, 120.606), (-24.622, 118.637), (-24.343, 116.656), (-24.136, 114.667), (-24.002, 112.672), (-23.943, 110.673), (-23.962, 108.673), (-24.057, 106.676), (-24.229, 104.683), (-24.479, 102.699), (-24.811, 100.727), (-25.221, 98.769), (-25.709, 96.83), (-26.274, 94.912), (-26.917, 93.018), (-27.635, 91.152), (-28.427, 89.316), (-29.292, 87.512), (-30.227, 85.744), (-31.23, 84.014), (-32.298, 82.323), (-33.428, 80.673), (-34.149, 79.681), (-34.149, 79.681)]
-first_red_left_4 = [(-38.418, 106.242), (-38.36, 108.241), (-38.374, 110.24), (-38.484, 112.237), (-38.681, 114.227), (-38.989, 116.203), (-39.405, 118.159), (-39.935, 120.087), (-40.587, 121.977), (-41.369, 123.818), (-42.276, 125.6), (-43.306, 127.313), (-44.454, 128.949), (-45.715, 130.501), (-47.078, 131.964), (-48.533, 133.336), (-50.071, 134.614), (-51.681, 135.8), (-53.351, 136.9), (-55.072, 137.919), (-56.836, 138.861), (-58.639, 139.726), (-60.472, 140.524), (-62.331, 141.264), (-64.213, 141.94), (-66.112, 142.567), (-68.027, 143.143), (-69.955, 143.676), (-71.894, 144.166), (-73.841, 144.62), (-75.798, 145.036), (-77.76, 145.423), (-79.728, 145.778), (-81.701, 146.107), (-83.677, 146.412), (-85.658, 146.691), (-87.641, 146.95), (-89.626, 147.19), (-91.614, 147.412), (-93.604, 147.616), (-95.595, 147.806), (-97.587, 147.981), (-99.58, 148.144), (-101.575, 148.294), (-103.57, 148.433), (-105.566, 148.562), (-107.562, 148.683), (-109.559, 148.795), (-111.556, 148.9), (-113.554, 148.998), (-115.551, 149.089), (-117.55, 149.176), (-119.548, 149.258), (-121.546, 149.336), (-123.545, 149.41), (-125.544, 149.481), (-127.543, 149.551), (-129.541, 149.618), (-131.54, 149.684), (-133.539, 149.749), (-135.538, 149.814), (-137.537, 149.879), (-139.536, 149.945), (-141.535, 150.012), (-143.534, 150.08), (-145.533, 150.151), (-147.531, 150.223), (-149.53, 150.299), (-151.528, 150.378), (-153.526, 150.461), (-155.525, 150.548), (-157.522, 150.64), (-161.26, 150.825), (-161.26, 150.825)]
-red_left_back_4 = [(-163.631, 152.248), (-161.632, 152.291), (-159.632, 152.332), (-157.632, 152.373), (-155.633, 152.413), (-153.633, 152.451), (-151.634, 152.488), (-149.634, 152.523), (-147.634, 152.557), (-145.634, 152.588), (-143.635, 152.616), (-141.635, 152.641), (-139.635, 152.662), (-137.635, 152.677), (-135.635, 152.687), (-133.635, 152.69), (-131.635, 152.685), (-129.635, 152.673), (-127.635, 152.655), (-125.635, 152.636), (-123.635, 152.617), (-121.635, 152.602), (-119.635, 152.59), (-117.635, 152.584), (-115.635, 152.581), (-113.635, 152.581), (-111.635, 152.585), (-109.635, 152.592), (-107.635, 152.601), (-105.635, 152.613), (-103.635, 152.626), (-101.635, 152.641), (-99.636, 152.658), (-97.636, 152.676), (-95.636, 152.695), (-92.961, 152.722), (-92.961, 152.722)]
+first_red_left_4 = [(-38.418, 106.242), (-38.361, 108.24), (-38.381, 110.238), (-38.496, 112.234), (-38.698, 114.222), (-39.011, 116.196), (-39.423, 118.152), (-39.944, 120.081), (-40.582, 121.976), (-41.329, 123.829), (-42.187, 125.634), (-43.158, 127.381), (-44.235, 129.065), (-45.408, 130.682), (-46.672, 132.231), (-48.025, 133.702), (-49.454, 135.1), (-50.949, 136.426), (-52.506, 137.679), (-54.118, 138.861), (-55.775, 139.979), (-57.476, 141.029), (-59.211, 142.021), (-60.978, 142.955), (-62.773, 143.836), (-64.591, 144.665), (-66.43, 145.448), (-68.289, 146.184), (-70.162, 146.882), (-72.05, 147.538), (-73.95, 148.159), (-75.861, 148.747), (-77.782, 149.301), (-79.711, 149.825), (-81.647, 150.323), (-83.589, 150.793), (-85.538, 151.238), (-87.492, 151.66), (-89.45, 152.061), (-91.413, 152.442), (-93.379, 152.802), (-95.349, 153.144), (-97.321, 153.469), (-99.296, 153.778), (-101.273, 154.071), (-103.252, 154.351), (-105.234, 154.617), (-107.217, 154.87), (-109.201, 155.11), (-111.187, 155.339), (-113.174, 155.557), (-115.162, 155.765), (-117.151, 155.964), (-119.141, 156.153), (-121.132, 156.334), (-123.123, 156.507), (-125.115, 156.672), (-127.108, 156.831), (-129.101, 156.982), (-131.095, 157.127), (-133.089, 157.266), (-135.084, 157.4), (-137.079, 157.528), (-139.074, 157.652), (-141.069, 157.771), (-143.065, 157.886), (-145.061, 157.998), (-147.057, 158.106), (-149.053, 158.21), (-151.049, 158.312), (-153.046, 158.411), (-155.043, 158.507), (-157.039, 158.602), (-159.036, 158.694), (-161.033, 158.785), (-163.03, 158.875), (-165.027, 158.964), (-167.024, 159.051), (-169.021, 159.139), (-171.018, 159.225), (-171.42, 159.243), (-171.42, 159.243)]
+red_left_back_4 = [(-171.42, 159.243), (-169.42, 159.268), (-167.42, 159.293), (-165.42, 159.318), (-163.42, 159.342), (-161.42, 159.365), (-159.42, 159.387), (-157.42, 159.408), (-155.421, 159.428), (-153.421, 159.446), (-151.421, 159.463), (-149.421, 159.479), (-147.421, 159.492), (-145.421, 159.503), (-143.421, 159.511), (-141.421, 159.516), (-139.421, 159.516), (-137.421, 159.513), (-135.421, 159.505), (-133.421, 159.493), (-131.421, 159.476), (-129.421, 159.455), (-127.421, 159.433), (-125.421, 159.41), (-123.422, 159.387), (-121.422, 159.366), (-119.422, 159.346), (-117.422, 159.329), (-115.422, 159.313), (-113.422, 159.299), (-111.422, 159.287), (-109.422, 159.277), (-107.422, 159.269), (-105.422, 159.261), (-103.422, 159.256), (-101.422, 159.251), (-99.422, 159.247), (-97.422, 159.245), (-95.422, 159.243), (-92.961, 159.243), (-92.961, 159.243)]
 
 blue_right_tomogo = [(abs(x), y) for x, y in red_left_tomogo]
 blue_right_tofirststack = [(abs(x), y) for x, y in red_left_tofirststack]
@@ -274,7 +272,8 @@ red_right_back_4 = [((x), -y) for x, y in red_left_back_4]
 
 # Testing paths
 decreasing_x = [(150,00),(100,0), (50,0), (0,0)]
-increasing_x = [(0,00),(50,0), (100,0), (0,0)]
+#increasing_x = increasing_x_points = [(x, 0) for x in range(0, 200, 10)]
+
 #[(-66.948, 66.505), (-65.755, 81.698), (-63.714, 96.795), (-60.605, 111.714), (-59.156, 118.226), (-59.156, 118.226)]
 #[(-66.948, 66.505), (-74.311, 79.794), (-75.997, 94.745), (-69.597, 108.353), (-59.156, 118.226), (-59.156, 118.226)]
 #red_left_tofirststack = [ (-59.156, 118.226)]
@@ -578,10 +577,47 @@ def calculate_drive_speeds(lookahead_point, direction):
     left_velocity = max(min(left_velocity, 100), -100)
     right_velocity = max(min(right_velocity, 100), -100)
 
+    global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
+    dx = lookahead_point[0] - current_x
+    dy = lookahead_point[1] - current_y
+
+    # Calculate the angle to the target point
+    point_angle = math.atan2(dy, dx)
+   
+    # Adjust the current angle based on the direction
+    adjusted_current_angle = current_angle
+    if direction == -1:
+        adjusted_current_angle += math.pi  # Add 180 degrees (π radians) to the current angle
+
+    # Normalize the adjusted current angle to be within the range [-π, π]
+    adjusted_current_angle = (adjusted_current_angle + math.pi) % (2 * math.pi) - math.pi
+
+    # Calculate the angle difference between the adjusted current heading and the target point
+    point_angle_diff = point_angle - adjusted_current_angle
+
+
+    # Normalize the angle difference to be within the range [-π, π]
+    if point_angle_diff > math.pi:
+        point_angle_diff -= 2 * math.pi
+    elif point_angle_diff < -math.pi:
+        point_angle_diff += 2 * math.pi
+
+    #point_angle_diff = (point_angle_diff + math.pi) % (2 * math.pi) - math.pi
+
+    # Calculate the wheel velocities based on the specified direction
+    curr_forward_velocity = forward_velocity * direction
+    curr_turn_velocity_k = turn_velocity_k
+    left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
+    right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
+
+    # Clamp the velocities to the range [-100, 100]
+    left_velocity = max(min(left_velocity, 100), -100)
+    right_velocity = max(min(right_velocity, 100), -100)
 
 def walk_path(points_list, lookahead_distance, stop_threshold, direction):
     global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity, robot_not_walking
-
+    
+    numDeceleratePoints = 0
     start_pos_size = len(points_list)
 
     if current_x == -1:
@@ -604,8 +640,11 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
         # Calculate drive speeds based on the specified direction
         calculate_drive_speeds(next_point, direction)
         #print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle) + " lspeed" + str(left_velocity) + " rspeed" + str(right_velocity))
-
-        # Update the robot's position
+        if len(points_list) < numDeceleratePoints:
+            left_velocity = left_velocity * 0.8 ** (numDeceleratePoints-len(points_list))
+            right_velocity = right_velocity * 0.8 ** (numDeceleratePoints-len(points_list))
+        
+        # Update the robot's position/stop
         update_position()
 
         # Check if the robot has reached the current target point
@@ -634,7 +673,7 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
 
 def autonomous_sample(): 
     global current_x, current_y, current_angle
-    print("Starting autonomous sample")
+    print("Starting autonomous sample")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
     while True:
         update_position()
         print("x: "+ str(current_x)+" y: " + str(current_y) + " angle: " + str(current_angle))
@@ -647,8 +686,8 @@ def autonomous_red_left():
     autonomous_more_donuts_side(red_left_tomogo, red_left_tofirststack, red_left_lasttwo, first_red_left_4, red_left_back_4, red_left_totower)
 
 def autonomous_red_right():
-    global p1redright, p2redright, p3redright, p4redright, p7redright
-    autonomous_more_donuts_side(red_right_tomogo, red_right_tofirststack, red_right_lasttwo, first_red_right_4, red_right_back_4, red_right_totower)
+    global p1redight, p2redright, p3redright, p4redright, p7redright
+    autonomous_more_donuts_side_modified(red_right_tomogo, red_right_tofirststack, red_right_lasttwo, first_red_right_4, red_right_back_4, red_right_totower)
     #autonomous_extra_mogo_side(p1redright, p2redright, p3redright, p4redright, p7redright)
 
 def autonomous_blue_left():
@@ -746,6 +785,60 @@ def autonomous_more_donuts_side(tomogo, tofirststack, last_two, first_4, back_4,
     adjust_high_scoring_motor_position()
     intake_state = IntakeState.STOPPED
     set_intake_motor_state()
+    walk_path(to_tower, lookahead, tolerance, 1)
+def autonomous_more_donuts_side_modified(tomogo, tofirststack, last_two, first_4, back_4, to_tower):
+    global intake_state, lookahead, high_score_target_angle, tolerance, forward_velocity, turn_velocity_k
+    # Bring up high scoring motor
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
+    adjust_high_scoring_motor_position()
+
+    lookahead = 50
+    tolerance = 2
+    # go to mogo
+    walk_path(tomogo, lookahead, tolerance, -1)
+    # Capture the mogo
+    mogo_p.set(True)
+    wait(100, MSEC)
+
+    # start intake to pick up the top donut including the stall code
+    intake_state = IntakeState.RUNNING
+    set_intake_motor_state(REVERSE)
+
+    # Bring down the intake to knock off the top donut
+    update_position()
+    print("autonomous_more_donuts_side: before tofirststack")
+    walk_path(tofirststack, lookahead, tolerance, 1)
+    update_position()
+    lookahead = 20
+    tolerance = 6
+    print("autonomous_more_donuts_side: before last_two")
+    #walk_path(last_two, lookahead, tolerance, 1)
+    print("autonomous_more_donuts_side: before first_4")
+    update_position()
+    lookahead = 50
+    walk_path(first_4, lookahead, tolerance, 1)
+    print("autonomous_more_donuts_side: before to_tower")
+    back_reverse_first = back_4[::-1]
+    back_reverse_second = back_4[::-1]
+    back_4_first = back_4[:]
+    back_4_second = back_4[:]
+    back_4_third = back_4[:]
+    print("autonomous_more_donuts_side: going back1")
+    walk_path(back_4_first, lookahead, tolerance, -1)
+    walk_path(back_reverse_first, lookahead, tolerance, 1)
+    wait(300, MSEC)
+    print("autonomous_more_donuts_side: going back2")
+    walk_path(back_4_second, lookahead, tolerance, -1)
+    walk_path(back_reverse_second, lookahead, tolerance, 1)
+    wait(300, MSEC)
+    walk_path(back_4_third, lookahead, tolerance, -1)
+    # Bring up high scoring motor
+    set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_DOWN)
+    adjust_high_scoring_motor_position()
+    intake_state = IntakeState.STOPPED
+    set_intake_motor_state()
+    turn_velocity_k = 40
+    forward_velocity = 40
     walk_path(to_tower, lookahead, tolerance, 1)
 
 # driver.py 
@@ -904,7 +997,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 4
+    slot_no = 2
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
@@ -954,6 +1047,7 @@ def autonomous_empty():
 def autonomous_test():
     global lookahead, tolerance, increasing_x, test_square, intake_state, high_score_target_angle, test_circle, gyro, eject_object, forward_velocity, turn_velocity_k
     #walk_path(increasing_x, lookahead, tolerance, 1)
+    
     #mogo_p.set(True)
     #wait(1, SECONDS)
     #high_score_target_angle = HIGH_SCORE_TARGET_ANGLE_WAIT
@@ -1111,6 +1205,7 @@ def autonomous_test():
     forward_velocity = 15
     turn_velocity_k = 15
     walk_path(passivehangreverse, lookahead, tolerance, 1)
+
     
 def unscoring():
     print("Hi")
@@ -1124,7 +1219,7 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     #autonomous()
-    #autonomous_test()
+    autonomous_test()
     #drivercontrol()
     #autonomous()
     #intake_p.set(True)
