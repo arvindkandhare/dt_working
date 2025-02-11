@@ -2,10 +2,10 @@
 
 from vex import *
 import time
+from threading import Event
 
+rotationals_changed = Event()
 
-# Initialize devices
-brain = Brain()
 controller_1 = Controller(PRIMARY)
 left_motor_a = Motor(Ports.PORT2, GearSetting.RATIO_6_1, True)
 left_motor_b = Motor(Ports.PORT3, GearSetting.RATIO_6_1, True)
@@ -577,45 +577,14 @@ def calculate_drive_speeds(lookahead_point, direction):
     left_velocity = max(min(left_velocity, 100), -100)
     right_velocity = max(min(right_velocity, 100), -100)
 
-    global current_x, current_y, current_angle, left_velocity, right_velocity, forward_velocity, turn_velocity_k
-    dx = lookahead_point[0] - current_x
-    dy = lookahead_point[1] - current_y
-
-    # Calculate the angle to the target point
-    point_angle = math.atan2(dy, dx)
-   
-    # Adjust the current angle based on the direction
-    adjusted_current_angle = current_angle
-    if direction == -1:
-        adjusted_current_angle += math.pi  # Add 180 degrees (π radians) to the current angle
-
-    # Normalize the adjusted current angle to be within the range [-π, π]
-    adjusted_current_angle = (adjusted_current_angle + math.pi) % (2 * math.pi) - math.pi
-
-    # Calculate the angle difference between the adjusted current heading and the target point
-    point_angle_diff = point_angle - adjusted_current_angle
-
-
-    # Normalize the angle difference to be within the range [-π, π]
-    if point_angle_diff > math.pi:
-        point_angle_diff -= 2 * math.pi
-    elif point_angle_diff < -math.pi:
-        point_angle_diff += 2 * math.pi
-
-    #point_angle_diff = (point_angle_diff + math.pi) % (2 * math.pi) - math.pi
-
-    # Calculate the wheel velocities based on the specified direction
-    curr_forward_velocity = forward_velocity * direction
-    curr_turn_velocity_k = turn_velocity_k
-    left_velocity = curr_forward_velocity - point_angle_diff * curr_turn_velocity_k
-    right_velocity = curr_forward_velocity + point_angle_diff * curr_turn_velocity_k
-
-    # Clamp the velocities to the range [-100, 100]
-    left_velocity = max(min(left_velocity, 100), -100)
-    right_velocity = max(min(right_velocity, 100), -100)
+def changed_event_handler():
+    rotationals_changed.set()
 
 def walk_path(points_list, lookahead_distance, stop_threshold, direction):
     global current_x, current_y, start_pos_size, forward_velocity, turn_velocity_k, left_velocity, right_velocity, robot_not_walking
+
+    left_rotational_sensor.changed(changed_event_handler)
+    right_rotational_sensor.changed(changed_event_handler)
     
     numDeceleratePoints = 0
     start_pos_size = len(points_list)
@@ -665,11 +634,13 @@ def walk_path(points_list, lookahead_distance, stop_threshold, direction):
         right_drive_smart.spin(FORWARD)
         #print("(" + str(current_x)+"," + str(current_y) + "),")
 
-        wait(20, MSEC)
+        rotationals_changed.wait(20, MSEC)
 
     # Stop motors when path is complete
     left_drive_smart.stop()
     right_drive_smart.stop()
+    left_rotational_sensor.changed()
+    right_rotational_sensor.changed()
 
 def autonomous_sample(): 
     global current_x, current_y, current_angle
