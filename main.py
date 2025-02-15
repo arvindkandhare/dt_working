@@ -861,14 +861,16 @@ def check_vision_sensor():
             if Color_sensor.color() == Color.RED:
                print("Ejecting Red")
                ejection_p.set(True)
-            else:
-                ejection_p.set(False)
+            elif Color_sensor.color() == Color.BLUE:
+               print("setting back")
+               ejection_p.set(False)
         else:
             if eject_object == RingType.BLUE:
                 if Color_sensor.color() == Color.BLUE:
                     #print("Ejecting Blue")
                     ejection_p.set(True)
-                else:
+                elif Color_sensor.color() == Color.RED:
+                    print("setting back")
                     ejection_p.set(False)
 
 # Function to display joystick positions (optional)
@@ -1024,12 +1026,15 @@ def autonomous():
 # Driver control function
 def drivercontrol():
     # Main control loop for driver control
+    global eject_object
+    eject_object = RingType.BLUE
+
     while True:
         set_drive_motor_velocities()
         toggle_high_scoring_motor()
         adjust_high_scoring_motor_position()
         toggle_intake_motor()
-        #check_vision_sensor()
+        check_vision_sensor()
         handle_digital_outputs()
         stall_detection_and_handling()
 
@@ -1211,7 +1216,7 @@ def unscoring():
     print("Hi")
 
 # Create a Competition object
-competition = Competition(drivercontrol, autonomous)
+#competition = Competition(drivercontrol, autonomous)
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
@@ -1219,10 +1224,10 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     #autonomous()
-    autonomous_test()
-    #drivercontrol()
+    #autonomous_test()
+    drivercontrol()
     #autonomous()
     #intake_p.set(True)
     #drive
     #unscoring()
-#main()
+main()
