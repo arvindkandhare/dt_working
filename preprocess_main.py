@@ -28,7 +28,12 @@ def process_main_file(main_file_path, target_path):
     with open(main_file_path, 'r') as f:
         lines = f.readlines()
 
+    skip_next_line = False
     for i, line in enumerate(lines):
+        if skip_next_line:
+            skip_next_line = False
+            continue
+
         match = pattern.search(line)
         if match:
             path_filename = match.group(1)
@@ -37,6 +42,7 @@ def process_main_file(main_file_path, target_path):
                 var_line = lines[i+1].split('=')[0].strip()
                 new_lines.append(line)
                 new_lines.append(f"{var_line} = {path_data}\n")
+                skip_next_line = True
             else:
                 new_lines.append(line)
         else:
