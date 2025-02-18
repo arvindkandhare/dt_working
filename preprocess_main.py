@@ -52,4 +52,4 @@ def process_main_file(main_file_path, target_path):
         f.writelines(new_lines)
 
 # Usage
-process_main_file('main.py', 'main_generated.py')
+process_main_file('main.py', 'main.py')
