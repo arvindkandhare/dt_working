@@ -1127,7 +1127,7 @@ def autonomous_test():
         adjust_high_scoring_motor_position()
 
     walk_path(alliance_stake, lookahead, tolerance, 1)
-    only_test_3_4 = True
+    only_test_3_4 = False
     if not only_test_3_4:
         print("alliance done with turning")
         walk_path(grabbing_mogo, lookahead, tolerance, -1)
