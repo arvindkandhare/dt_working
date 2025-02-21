@@ -1,0 +1,32 @@
+#PATH-POINTS-START Path
+-110.51,-106.242,120,0
+-112.219,-107.281,120
+-113.91,-108.349,120
+-115.579,-109.45,120
+-117.225,-110.587,120
+-118.843,-111.763,120
+-120.429,-112.98,120
+-121.981,-114.242,120
+-123.493,-115.551,120
+-124.964,-116.906,120
+-126.39,-118.308,120
+-127.774,-119.751,120
+-129.121,-121.23,120
+-130.441,-122.732,120
+-131.75,-124.245,120
+-133.065,-125.752,120
+-134.405,-127.237,120
+-135.784,-128.685,120
+-137.213,-130.084,120
+-138.694,-131.427,120
+-140.227,-132.711,120
+-141.808,-133.937,120
+-143.431,-135.105,120
+-145.091,-136.221,120
+-146.782,-137.288,120
+-148.501,-138.311,120
+-150.243,-139.294,120
+-152.004,-140.241,120
+-154.145,-141.339,120,0
+-154.145,-141.339,0,0
+#PATH.JERRYIO-DATA {"appVersion":"0.8.3","format":"path.jerryio v0.1","gc":{"robotWidth":45.72,"robotHeight":45.72,"robotIsHolonomic":false,"showRobot":true,"uol":1,"pointDensity":1.9999999999999998,"controlMagnetDistance":5,"fieldImage":{"displayName":"V5RC 2025 - High Stakes (Skills)","signature":"V5RC 2025 - High Stakes (Skills)","origin":{"__type":"built-in"}},"coordinateSystem":"VEX Gaming Positioning System"},"paths":[{"segments":[{"controls":[{"uid":"s44KKdnlab","x":-110.51028277634963,"y":-106.24164524421595,"lock":false,"visible":true,"heading":0,"__type":"end-point"},{"uid":"eeowWeKmS7","x":-135.17352185089976,"y":-120.94473007712082,"lock":false,"visible":true,"__type":"control"},{"uid":"h2opgRUpLa","x":-128.53341902313625,"y":-128.53341902313628,"lock":false,"visible":true,"__type":"control"},{"uid":"8FIsO9mm8J","x":-154.1452442159383,"y":-141.3393316195373,"lock":false,"visible":true,"heading":0,"__type":"end-point"}],"speedProfiles":[],"lookaheadKeyframes":[],"uid":"e6VGhMa9I8"}],"pc":{"speedLimit":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":600,"label":"600"},"step":1,"from":40,"to":120},"bentRateApplicableRange":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":1,"label":"1"},"step":0.001,"from":0,"to":0.1}},"name":"Path","uid":"j39vvH45z1","lock":false,"visible":true}]}
