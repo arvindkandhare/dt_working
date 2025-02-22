@@ -1101,7 +1101,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 2
+    slot_no = 5
     if slot_no == 1:
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
@@ -1512,7 +1512,7 @@ def rotational_test():
         print(gyro.heading())
         wait(1, SECONDS)
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous)
+competition = Competition(drivercontrol, autonomous)
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
@@ -1520,7 +1520,7 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     #autonomous()
-    autonomous_test()
+    #autonomous_test()
     #gyro_test()
     #rotational_test()
     #drivercontrol()
@@ -1528,4 +1528,3 @@ def main():
     #intake_p.set(True)
     #drive
     #unscoring()
-main()
