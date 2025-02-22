@@ -1154,7 +1154,7 @@ def autonomous():
     # define a variable slot_no and switch case based on the slot_no
     # to run the corresponding autonomous routine
     #wait(3, SECONDS)
-    slot_no = 2
+    slot_no = 1
     if slot_no == 1:
         eject_object = RingType.BLUE
         gyro.set_heading(180, DEGREES)
@@ -1430,7 +1430,7 @@ def unscoring():
             wait(100, MSEC)
 
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous)
+competition = Competition(drivercontrol, autonomous)
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
@@ -1444,4 +1444,4 @@ def main():
     #intake_p.set(True)
     #drive
     #unscoring()
-main()
+#main()
