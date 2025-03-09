@@ -29,7 +29,7 @@ intake_p = DigitalOut(brain.three_wire_port.d)
 rotational_sensor = Rotation(Ports.PORT19, True)
 rotational_sensor.set_position(0, DEGREES)
 
-left_rotational_sensor = Rotation(Ports.PORT7, True)
+left_rotational_sensor = Rotation(Ports.PORT7, False)
 right_rotational_sensor = Rotation(Ports.PORT6, False)
 left_rotational_sensor.set_position(0, DEGREES)
 right_rotational_sensor.set_position(0, DEGREES)
@@ -90,6 +90,7 @@ BLUEE = Signature(2, -4415, -3205, -3810, 5461, 8989, 7225, 2.5, 0)
   ],
   "codes": []
 }'''
+Distance_reject = Distance(Ports.PORT11)
 Color_sensor = Optical(Ports.PORT15)
 Color_sensor.set_light_power(100)
 # Initialize eject_counter
@@ -264,6 +265,8 @@ blue_left_totower = [(abs(x), -y) for x, y in red_left_totower]
 blue_left_lasttwo = [(abs(x), -y) for x, y in red_left_lasttwo]
 first_blue_left_4 =[(abs(x), -y) for x, y in first_red_left_4]
 blue_left_back_4 = [(abs(x), -y) for x, y in red_left_back_4]
+blue_left_middle = [((x), -y) for x, y in red_left_middle]
+
 
 red_right_tomogo = [((x), -y) for x, y in red_left_tomogo]
 red_right_tofirststack = [((x), -y) for x, y in red_left_tofirststack]
@@ -670,13 +673,13 @@ def autonomous_red_left():
 
 def autonomous_red_right():
     global p1redight, p2redright, p3redright, p4redright, p7redright
-    autonomous_mogo_side(red_right_tomogo, red_right_middle, first_red_right_4, [(-73.29, -96.546)], [(-120, -60)], [(-45, -10)])
+    autonomous_mogo_side(red_right_tomogo)
     #autonomous_more_donuts_side_modified(red_right_tomogo, red_right_tofirststack, red_right_lasttwo, first_red_right_4, red_right_back_4, red_right_totower)
     #autonomous_extra_mogo_side(p1redright, p2redright, p3redright, p4redright, p7redright)
 
 def autonomous_blue_left():
     global p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft
-    autonomous_more_donuts_side(blue_left_tomogo, blue_left_tofirststack, blue_left_lasttwo, first_blue_left_4, blue_left_back_4, blue_left_totower)
+    autonomous_mogo_side(blue_left_tomogo, blue_left_middle, first_blue_left_4, [(73.29, -96.546)], [(120, -60)], [(45, -10)])
     #autonomous_extra_mogo_side(p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft)
 
 def autonomous_extra_mogo_side(p1, p2, p3, p4, p7):
@@ -825,7 +828,7 @@ def autonomous_more_donuts_side_modified(tomogo, tofirststack, last_two, first_4
     forward_velocity=40
     walk_path(to_tower, lookahead, tolerance, 1)
 
-def autonomous_mogo_side(tomogo, tomiddle, first_4, tofirststack, tower_position, totower):
+def autonomous_mogo_side(tomogo):
     global intake_state, lookahead, high_score_target_angle, tolerance, forward_velocity, turn_velocity_k
     # Bring up high scoring motor
     set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_WAIT)
@@ -844,7 +847,7 @@ def autonomous_mogo_side(tomogo, tomiddle, first_4, tofirststack, tower_position
     set_intake_motor_state(REVERSE)
 
     # Bring down the intake to knock off the top donut
-    update_position()
+    """update_position()
     print("autonomous_more_donuts_side: before tomiddle")
     walk_path(tomiddle, lookahead, tolerance, 1)
 
@@ -863,7 +866,7 @@ def autonomous_mogo_side(tomogo, tomiddle, first_4, tofirststack, tower_position
     update_position()
     walk_path(totower, lookahead, tolerance, 1)
     set_high_score_angle(HIGH_SCORE_TARGET_ANGLE_DOWN)
-    print("Finished")
+    print("Finished")"""
 # driver.py 
 def valid_seen_object(seen_objects):
     # A placeholder to check if the objects array is valid
@@ -883,19 +886,17 @@ def check_vision_sensor(eject_object):
     if Color_sensor.brightness() > BRIGHTNESS_THRESHOLD:
         #print("reached here")
         if eject_object == RingType.RED:
-            if Color_sensor.color() == Color.RED:
+            if Color_sensor.color() == Color.RED and Distance_reject.object_distance(MM) < 16:
                 print("Ejecting Red")
                 #ejection_p.set(True)
-                wait(200, MSEC)
                 intake_upper.stop()
             else:
                 ejection_p.set(False)
         else: 
             if eject_object == RingType.BLUE:
-                if Color_sensor.color() == Color.BLUE:
+                if Color_sensor.color() == Color.BLUE and Distance_reject.object_distance(MM) < 16:
                     print("Ejecting Blue")
                     #ejection_p.set(True)
-                    wait(170, MSEC)
                     intake_upper.stop()
                 else:
                     ejection_p.set(False)
@@ -1035,12 +1036,13 @@ def autonomous():
         gyro.set_heading(180, DEGREES)
         eject_object = RingType.BLUE
         autonomous_red_right()
+        eject_object = RingType.NONE
     elif slot_no == 3:
         eject_object = RingType.NONE
-        autonomous_blue_left()
+        autonomous_blue_right()
     elif slot_no == 4:
         eject_object = RingType.RED
-        autonomous_blue_right()
+        autonomous_blue_left()
     elif slot_no == 5:
         eject_object = RingType.BLUE
         autonomous_test()
@@ -1054,13 +1056,16 @@ def autonomous():
 def drivercontrol():
     # Main control loop for driver control
     print("Running driver control")
+    intake_upper.set_velocity(90, PERCENT)
+    eject_object = RingType.NONE
+    ejection_p.set(False)
     while True:
-        check_vision_sensor(RingType.BLUE)
+        #check_vision_sensor(RingType.BLUE)
         set_drive_motor_velocities()
         toggle_high_scoring_motor()
         adjust_high_scoring_motor_position()
         toggle_intake_motor()
-        check_vision_sensor(RingType.BLUE)
+        #check_vision_sensor(RingType.BLUE)
         handle_digital_outputs()
         stall_detection_and_handling()
 
@@ -1247,8 +1252,8 @@ def main():
     #mogo_p.set(False)
     #intake_p.set(True)
     #autonomous()
-    autonomous_test()
-    #drivercontrol()
+    #autonomous_test()
+    drivercontrol()
     #autonomous()
     #intake_p.set(True)
     #drive
