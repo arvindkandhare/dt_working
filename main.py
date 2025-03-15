@@ -13,12 +13,7 @@ left_motor_c = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
 right_motor_a = Motor(Ports.PORT5, GearSetting.RATIO_6_1, False)
 right_motor_b = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
 right_motor_c = Motor(Ports.PORT17, GearSetting.RATIO_6_1, False)
-left_motor_a.set_stopping(HOLD)
-left_motor_b.set_stopping(HOLD)
-left_motor_c.set_stopping(HOLD)
-right_motor_a.set_stopping(HOLD)  
-right_motor_b.set_stopping(HOLD)
-right_motor_c.set_stopping(HOLD)
+
  
 left_drive_smart = MotorGroup(left_motor_a, left_motor_b, left_motor_c)
 right_drive_smart = MotorGroup(right_motor_a, right_motor_b, right_motor_c)
@@ -1263,6 +1258,12 @@ def autonomous_test():
 
 
     #walk_path(reversed_test_circle, lookahead, tolerance, 1)
+    left_motor_a.set_stopping(HOLD)
+    left_motor_b.set_stopping(HOLD)
+    left_motor_c.set_stopping(HOLD)
+    right_motor_a.set_stopping(HOLD)  
+    right_motor_b.set_stopping(HOLD)
+    right_motor_c.set_stopping(HOLD)
     lookahead = 45
     forward_velocity = 45
     turn_velocity_k = 40
