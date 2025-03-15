@@ -311,6 +311,12 @@ p2blueleft = [(abs(x), y) for x, y, *_ in p2redright]
 p3blueleft = [(abs(x), y) for x, y, *_ in p3redright]
 p4blueleft = [(abs(x), y) for x, y, *_ in p4redright]
 p7blueleft = [(abs(x), y) for x, y, *_ in p7redright]
+blue_left_goal_rush = [(abs(x), y) for x, y, *_ in red_right_goal_rush]
+blue_left_goal_back = [(abs(x), y) for x, y, *_ in red_right_goal_back]
+blue_left_tomatchload =[(abs(x), y) for x, y, *_ in red_right_tomatchload]
+blue_left_to_mogo =[(abs(x), y) for x, y, *_ in red_left_tomogo]
+blue_left_to_corner = [(abs(x), y) for x, y, *_ in red_left_totower]
+
 
 
 
@@ -766,13 +772,14 @@ def autonomous_red_left():
 
 def autonomous_red_right():
     global p1redight, p2redright, p3redright, p4redright, p7redright
-    autonomous_mogo_side(red_right_goal_rush, red_right_goal_back, red_right_to_corner)
+    autonomous_mogo_side(red_right_goal_rush, red_right_goal_back, red_right_to_corner, [(-64.067, -37.886)], [(-54, -54)])
     #autonomous_more_donuts_side_modified(red_right_tomogo, red_right_tofirststack, red_right_lasttwo, first_red_right_4, red_right_back_4, red_right_totower)
     #autonomous_extra_mogo_side(p1redright, p2redright, p3redright, p4redright, p7redright)
 
 def autonomous_blue_left():
     global p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft
-    autonomous_more_donuts_side(blue_left_tomogo, blue_left_tofirststack, blue_left_lasttwo, first_blue_left_4, blue_left_back_4, blue_left_totower)
+    autonomous_mogo_side(blue_left_goal_rush, blue_left_goal_back, blue_left_to_corner, [(64.067, -37.886)], [(54, -54)])
+    # autonomous_more_donuts_side(blue_left_tomogo, blue_left_tofirststack, blue_left_lasttwo, first_blue_left_4, blue_left_back_4, blue_left_totower)
     #autonomous_extra_mogo_side(p1blueleft, p2blueleft, p3blueleft, p4blueleft, p7blueleft)
 
 def autonomous_extra_mogo_side(p1, p2, p3, p4, p7):
@@ -920,7 +927,7 @@ def autonomous_more_donuts_side_modified(tomogo, tofirststack, last_two, first_4
     forward_velocity = 40
     walk_path(to_tower, lookahead, tolerance, 1)
 
-def autonomous_mogo_side(goal_rush, goal_back, to_corner):
+def autonomous_mogo_side(goal_rush, goal_back, to_corner, second_mogo, to_tower):
     global intake_state, lookahead, high_score_target_angle, tolerance, forward_velocity, turn_velocity_k
     lookahead = 50
     tolerance = 2
@@ -953,13 +960,16 @@ def autonomous_mogo_side(goal_rush, goal_back, to_corner):
     wait(1000, MSEC)
     mogo_p.set(False)
     #Capture other mogo
-    walk_path([(-64.067, -37.886)], lookahead, tolerance, -1)
+    #  walk_path([(-64.067, -37.886)], lookahead, tolerance, -1)
+    walk_path(second_mogo, lookahead, tolerance, -1)
     mogo_p.set(True)
     #Go to corner
     walk_path(to_corner, lookahead, tolerance, 1)
     wait(1000, MSEC)
     # Touch tower
-    walk_path([(-54, -54)], lookahead, tolerance, -1)
+    #walk_path([(-54, -54)], lookahead, tolerance, -1)
+    walk_path(to_tower, lookahead, tolerance, -1)
+
 # driver.py
 def valid_seen_object(seen_objects):
     # A placeholder to check if the objects array is valid
@@ -1431,4 +1441,4 @@ def main():
     #intake_p.set(True)
     #drive
     #unscoring()
-main()
+#main()
