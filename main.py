@@ -1416,14 +1416,14 @@ def debug():
 
 
 # Create a Competition object
-#competition = Competition(drivercontrol, autonomous)
+competition = Competition(drivercontrol, autonomous)
 def main():
     # Any initialization code before the match starts
     print("Running main.py")
     wait(3, SECONDS)
     #mogo_p.set(False)
     #intake_p.set(True)
-    autonomous()
+    #autonomous()
     #ws2 = Thread( debug )
     #autonomous_test()
     #drivercontrol()
