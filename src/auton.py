@@ -118,6 +118,8 @@ def calculate_lookahead_point(pos_list, current_x, current_y):
     dy = pos_list[0][1] - current_y
     while math.sqrt((dx**2 + dy**2)) < lookahead:
         pos_list.pop(0)
+        if len(pos_list) == 0:
+            return "done"
         dx = pos_list[0][0] - current_x
         dy = pos_list[0][1] - current_y
     return pos_list
@@ -132,11 +134,11 @@ def calculate_drive_speeds(pos_list, current_x, current_y, forward_velocity, tur
     if point_angle_diff > math.pi:
         point_angle_diff = point_angle_diff - 2*math.pi
 
-    if point_angle_diff < math.pi:
+    if point_angle_diff < -math.pi:
         point_angle_diff = point_angle_diff + 2*math.pi
 
-    left_velocity = forward_velocity - turn_velocity_k
-    right_velocity = forward_velocity + turn_velocity_k
+    left_velocity = forward_velocity - turn_velocity_k * point_angle_diff
+    right_velocity = forward_velocity + turn_velocity_k * point_angle_diff
 
     return max(min(left_velocity, 100), -100), max(min(right_velocity, 100), -100)
 
